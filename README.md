@@ -9,7 +9,7 @@ TODO: General overview of the plans for the Conversation API
 ## How to participate in the EA
 
 * Try out the [quickstart guides](#get-started)
-* Provide us with ask questions, provide feedback and report problems by [creating an issue](issues)
+* Provide us with ask questions, provide feedback and report problems by [creating an issue](/../../issues/)
 
 ## Get Started
 
