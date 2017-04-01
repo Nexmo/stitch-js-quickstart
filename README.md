@@ -15,7 +15,7 @@ TODO: General overview of the plans for the Conversation API
 
 * [1. Your first conversation app](docs/getting-started.md)
 
-## Try the examples
+## Run the examples
 
 * [1. A simple conversation](examples/1-simple-conversation/)
 
