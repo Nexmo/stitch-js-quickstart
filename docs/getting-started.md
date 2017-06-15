@@ -14,7 +14,7 @@ In this getting started guide we'll demonstrate how to build a simple conversati
 Install the Nexmo CLI:
 
 ```bash
-$ npm install -g nexmo-cli
+$ npm install -g nexmo-cli@beta
 ```
 
 Setup the CLI to use your Nexmo API Key and API Secret. You can get these from the [setting page](https://dashboard.nexmo.com/settings) in the Nexmo Dashboard.
@@ -58,7 +58,7 @@ curl -X POST https://api.nexmo.com/beta/users\
 Generate a JWT for the user and take a note of it.
 
 ```bash
-nexmo jwt:generate ./private.key sub=jamie application_id=YOUR_APP_ID
+nexmo jwt:generate ./private.key sub=jamie acl='{"paths": { "/**": {  } } }' application_id=YOUR_APP_ID
 ```
 
 ### Create the JavaScript App
@@ -114,7 +114,7 @@ So, the first thing to do is get a list of conversations that the logged-in user
 ```js
 rtc.login(userToken).then(function(app) {
   console.log('*** Logged into app', app);
-  
+
   // Get a list of conversations within the application
   return app.getConversations();
 }).then(function(conversations) {
@@ -129,7 +129,7 @@ Then find if the conversation that we are looking to join is within the list of 
 ```js
 }).then(function(conversations) {
   console.log('*** Retrieved conversations', conversations);
-  
+
   // Check if the user is either already a member or has been invited to join
   var uuid = Object.keys(conversations).find(function(id) {
     return conversations[id].name === conversation.name;
@@ -157,7 +157,7 @@ If the user is already a member of the conversation through a previous session t
   }
 }).then(function(conv) {
   conversation = conv;
-  
+
   console.log('*** Joining conversation', conversation, conversation.me);
   if(conversation.me && conversation.me.state === 'JOINED') {
     // Already a member of the conversation
@@ -180,7 +180,7 @@ Once the member has joined the channel we want to listen for `text` event on the
   }
 }).then(function(member) {
   console.log('*** Joined as ' + member.name);
-  
+
   conversation.on('text', function(sender, message) {
     console.log('*** Message received', sender, message);
     var messagesEl = document.getElementById('messages');
@@ -211,4 +211,5 @@ Run `index.html` in two side-by-side browser windows to see the conversation tak
 
 ## Where next?
 
-TODO: Learn more about...
+* Have a look at the [Nexmo Conversation JS SDK API Reference](https://conversation-js-docs.herokuapp.com/)
+* Take a look at the next getting started guide to learn [how to invite users to a conversation](../../getting-started-2.md).

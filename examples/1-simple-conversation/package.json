@@ -1,5 +1,5 @@
 {
-  "name": "gettingstarted",
+  "name": "simple-conversation",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "nexmo-conversation": "0.0.41"
+    "nexmo-conversation": "0.0.43"
   }
 }
