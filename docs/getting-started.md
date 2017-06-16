@@ -1,7 +1,5 @@
 ## Getting Started with the Nexmo Conversation JS SDK
 
-The Nexmo Conversation API enables you to build conversation features where communication can take place across multiple mediums including IP Messaging, PSTN Voice, SMS and WebRTC Audio and Video. The context of the conversations is maintained though each communication event taking place within a conversation, no matter the medium.
-
 In this getting started guide we'll demonstrate how to build a simple conversation app with IP messaging using the Nexmo Conversation JavaScript SDK. In doing so we'll touch on concepts such as Nexmo Applications, JWTs, Users, Conversations and conversation Members.
 
 ### Before you being
@@ -58,7 +56,7 @@ curl -X POST https://api.nexmo.com/beta/users\
 Generate a JWT for the user and take a note of it.
 
 ```bash
-nexmo jwt:generate ./private.key sub=jamie acl='{"paths": { "/**": {  } } }' application_id=YOUR_APP_ID
+nexmo jwt:generate ./private.key sub=jamie acl='{"paths": {"/v1/sessions/**": {}, "/v1/users/**": {}, "/v1/conversations/**": {}}}' application_id=YOUR_APP_ID
 ```
 
 ### Create the JavaScript App

@@ -1,6 +1,6 @@
 # Nexmo Conversation SDK for JavaScript Beta EA
 
-TODO: Basic overview of this EA with a focus on the JavaScript SDK.
+The Nexmo Conversation API enables you to build conversation features where communication can take place across multiple mediums including IP Messaging, PSTN Voice, SMS and WebRTC Audio and Video. The context of the conversations is maintained though each communication event taking place within a conversation, no matter the medium.
 
 Make sure you and your team are on the private github team
 

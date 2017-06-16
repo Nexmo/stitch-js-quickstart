@@ -1,8 +1,19 @@
 <!-- application_id 8574eb16-5fee-4911-8c41-58d37b10f5cf -->
 <style>
-#messages { width: 80%; height: 300px; }
-#message { width: 80%; height: 30px; float: left; }
-#send { height: 30px; }
+    #messages {
+        width: 80%;
+        height: 300px;
+    }
+
+    #message {
+        width: 80%;
+        height: 30px;
+        float: left;
+    }
+
+    #send {
+        height: 30px;
+    }
 </style>
 <div id="messages"></div>
 <textarea id="message"></textarea>
@@ -10,65 +21,66 @@
 
 <script src="./node_modules/nexmo-conversation/dist/conversationClient.js"></script>
 <script>
-var userToken = "USER_TOKEN";
-userToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0OTcyODM0OTIsImp0aSI6ImRlYzMwOWMwLTRmODgtMTFlNy1hMjkwLWU5OWIyMGRkYmI2NCIsInN1YiI6ImphbWllIiwiYWNsIjp7InBhdGhzIjp7Ii8qKiI6e319fSwiYXBwbGljYXRpb25faWQiOiI2MTk0YjkwZi0wYjM1LTRkYTgtOTQwZS1mMTNiMDc1NGI4NDAifQ.uT-MnygVA8IaLmkJ3bTVjfO3Ob15wdDTypEQDbqv47aNxg2pyQZ7_u2nOjlSWGWb3nw7lon6v8MqaEYJVMocb24qPQWZ3XU2TQ4ApGGCKeP9Lj5BqIaQUOHFOcH8zWXdipyiPJFg4NuzidpfkKd8Ky7Ci0o3EFz7kbmrJ2l4txniECmjpkCV_QWa0oM8UrcVHrAlDxPhKZkbJdRTa0stHAqq0g123CUF0Btlu3P2qOW8dt4_vXdh7MEMdCXfvIBVm5ZMxYaemYkRMl1GCQSDg9jiu_ODeCNFAelGfGODV7gLfc95zSj9PCoyXnjMsi_VyftPMxHxADg5mWA58zqIFw";
+    var userToken = "USER_TOKEN";
 
-var conversation = {name: 'nexmo-chat'};
+    var conversation = {
+        name: 'nexmo-chat'
+    };
 
-var rtc = new ConversationClient({debug: false});
+    var rtc = new ConversationClient({
+        debug: false
+    });
 
-rtc.login(userToken).then(function(app) {
-  console.log('*** Logged into app', app);
+    rtc.login(userToken).then(function(app) {
+        console.log('*** Logged into app', app);
 
-  // Get a list of conversations within the application
-  return app.getConversations();
-}).then(function(conversations) {
-  console.log('*** Retrieved conversations', conversations);
+        // Get a list of conversations within the application
+        return app.getConversations();
+    }).then(function(conversations) {
+        console.log('*** Retrieved conversations', conversations);
 
-  // Check if the user is either already a member or has been invited to join
-  var uuid = Object.keys(conversations).find(function(id) {
-    return conversations[id].name === conversation.name;
-  });
+        // Check if the user is either already a member or has been invited to join
+        var uuid = Object.keys(conversations).find(function(id) {
+            return conversations[id].name === conversation.name;
+        });
 
-  if(uuid !== undefined) {
-    // Conversation exists
-    console.log('*** Conversation exists with UUID', uuid);
-    return conversations[uuid];
-  }
-  else {
-    // It doesn't exist. Create it.
-    console.log('*** Creating a new conversation', conversation);
-    return rtc.app.newConversation(conversation);
-  }
-}).then(function(conv) {
-  conversation = conv;
+        if (uuid !== undefined) {
+            // Conversation exists
+            console.log('*** Conversation exists with UUID', uuid);
+            return conversations[uuid];
+        } else {
+            // It doesn't exist. Create it.
+            console.log('*** Creating a new conversation', conversation);
+            return rtc.app.newConversation(conversation);
+        }
+    }).then(function(conv) {
+        conversation = conv;
 
-  console.log('*** Joining conversation', conversation, conversation.me);
-  if(conversation.me && conversation.me.state === 'JOINED') {
-    // Already a member of the conversation
-    return conversation.me;
-  }
-  else {
-    // Need to join
-    return conversation.join(rtc.app.me);
-  }
-}).then(function(member) {
-  console.log('*** Joined as ' + member.name);
+        console.log('*** Joining conversation', conversation, conversation.me);
+        if (conversation.me && conversation.me.state === 'JOINED') {
+            // Already a member of the conversation
+            return conversation.me;
+        } else {
+            // Need to join
+            return conversation.join(rtc.app.me);
+        }
+    }).then(function(member) {
+        console.log('*** Joined as ' + member.name);
 
-  conversation.on('text', function(sender, message) {
-    console.log('*** Message received', sender, message);
-    var messagesEl = document.getElementById('messages');
-    var text = sender.name + ': ' + message.text + '\n' +
-               messagesEl.innerText;
-    messagesEl.innerText = text;
-  });
-}).catch(function(error) {
-  console.error(error);
-});
+        conversation.on('text', function(sender, message) {
+            console.log('*** Message received', sender, message);
+            var messagesEl = document.getElementById('messages');
+            var text = sender.name + ': ' + message.text + '\n' +
+                messagesEl.innerText;
+            messagesEl.innerText = text;
+        });
+    }).catch(function(error) {
+        console.error(error);
+    });
 
-document.getElementById('send')
-  .addEventListener('click', function() {
-    var message = document.getElementById('message').value;
-    conversation.sendText(message);
-  }, false);
+    document.getElementById('send')
+        .addEventListener('click', function() {
+            var message = document.getElementById('message').value;
+            conversation.sendText(message);
+        }, false);
 </script>

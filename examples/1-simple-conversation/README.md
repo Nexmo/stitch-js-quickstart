@@ -2,6 +2,4 @@
 
 ## Running the example
 
-TODO: much more information required
-
 Run `npm install` within this directory and follow the setup instructions in the [getting started guide](../../getting-started.md).
