@@ -64,7 +64,7 @@ $ APP_JWT="$(nexmo jwt:generate ./private.key application_id=YOUR_APP_ID)"
 Create a conversation within the application:
 
 ```bash
-curl -X POST https://api.nexmo.com/beta/conversations\
+$ curl -X POST https://api.nexmo.com/beta/conversations\
  -H 'Authorization: Bearer '$APP_JWT -H 'Content-Type:application/json' -d '{"name":"nexmo-chat", "display_name": "Nexmo Chat"}'
 ```
 
@@ -79,29 +79,27 @@ This will result in a JSON response that looks something like the following. Tak
 Create a user who will participate within the conversation.
 
 ```bash
-curl -X POST https://api.nexmo.com/beta/users\
+$ curl -X POST https://api.nexmo.com/beta/users\
   -H 'Authorization: Bearer '$APP_JWT \
   -H 'Content-Type:application/json' \
   -d '{"name":"jamie"}'
 ```
 
-### 1.5 - Generate a User JWT
+The output will look as follows:
 
-Generate a JWT for the user and take a note of it. Remember to change the `YOUR_APP_ID` value in the command.
-
-```bash
-$ USER_JWT="$(nexmo jwt:generate ./private.key sub=jamie acl='{"paths": {"/v1/sessions/**": {}, "/v1/users/**": {}, "/v1/conversations/**": {}}}' application_id=YOUR_APP_ID)"
+```json
+{"id":"USR-9a88ad39-31e0-4881-b3ba-3b253e457603","href":"http://conversation.local/v1/users/USR-9a88ad39-31e0-4881-b3ba-3b253e457603"}
 ```
 
-*Note: The above command saves the generated JWT to a `USER_JWT` variable.*
+Take a note of the `id` attribute as this is the unique identifier for the user that has been created. We'll refer to this as `USER_ID` later.
 
-### 1.6 - Add the User to the Conversation
+### 1.5 - Add the User to the Conversation
 
-Finally, let's add the user to the conversation that we created. Remember to replace `CONVERSATION_ID` value.
+Finally, let's add the user to the conversation that we created. Remember to replace `CONVERSATION_ID` and `USER_ID` values.
 
 ```bash
-› curl -X POST https://api.nexmo.com/beta/conversations/CONVERSATION_ID/members\
- -H 'Authorization: Bearer '$APP_JWT -H 'Content-Type:application/json' -d '{"action":"join", "user_id":"USR-f4a27041-744d-46e0-a75d-186ad6cfcfae", "channel":{"type":"app"}}'
+$ curl -X POST https://api.nexmo.com/beta/conversations/CONVERSATION_ID/members\
+ -H 'Authorization: Bearer '$APP_JWT -H 'Content-Type:application/json' -d '{"action":"join", "user_id":"USER_ID", "channel":{"type":"app"}}'
 ```
 
 The response to this request will confirm that the user has `JOINED` the `nexmo-chat` conversation.
@@ -121,6 +119,22 @@ Where you should see a response similar to the following:
 
 ```json
 [{"user_id":"USR-f4a27041-744d-46e0-a75d-186ad6cfcfae","name":"MEM-fe168bd2-de89-4056-ae9c-ca3d19f9184d","user_name":"jamie","state":"JOINED"}]
+```
+
+### 1.6 - Generate a User JWT
+
+Generate a JWT for the user and take a note of it. Remember to change the `YOUR_APP_ID` value in the command.
+
+```bash
+$ USER_JWT="$(nexmo jwt:generate ./private.key sub=jamie acl='{"paths": {"/v1/sessions/**": {}, "/v1/users/**": {}, "/v1/conversations/**": {}}}' application_id=YOUR_APP_ID)"
+```
+
+*Note: The above command saves the generated JWT to a `USER_JWT` variable.*
+
+You can see the JWT for the user by running the following:
+
+```bash
+$ echo $USER_JWT
 ```
 
 ## 2 - Create the JavaScript App
