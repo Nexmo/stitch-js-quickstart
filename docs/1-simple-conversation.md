@@ -28,9 +28,11 @@ This guide will introduce you to the following concepts.
     $ nexmo setup api_key api_secret
     ```
 
-## Setup
+## 1 - Setup
 
 _Note: The steps within this section can all be done dynamically via server-side logic. But in order to get the client-side functionality we're going to manually run through setup._
+
+### 1.1 - Create a Nexmo Application
 
 Create a Nexmo application within the Nexmo platform to use within this guide.
 
@@ -47,7 +49,9 @@ Private Key saved to: private.key
 
 The first item is the Application ID which you should take a note of. We'll refer to this as `YOUR_APP_ID` later. The second value is a private key location. The private key is used generate JWTs that are used to authenticate your interactions with Nexmo.
 
-Create a JWT using your Application ID (`YOUR_APP_ID`).
+### 1.2 - Generate an Application JWT
+
+Generate a JWT using your Application ID (`YOUR_APP_ID`).
 
 ```bash
 $ APP_JWT="$(nexmo jwt:generate ./private.key application_id=YOUR_APP_ID)"
@@ -55,7 +59,9 @@ $ APP_JWT="$(nexmo jwt:generate ./private.key application_id=YOUR_APP_ID)"
 
 *Note: The above command saves the generated JWT to a `APP_JWT` variable.*
 
-Create a conversation within the application.
+### 1.3 - Create a Conversation
+
+Create a conversation within the application:
 
 ```bash
 curl -X POST https://api.nexmo.com/beta/conversations\
@@ -68,6 +74,8 @@ This will result in a JSON response that looks something like the following. Tak
 {"id":"CON-8cda4c2d-9a7d-42ff-b695-ec4124dfcc38","href":"http://conversation.local/v1/conversations/CON-8cda4c2d-9a7d-42ff-b695-ec4124dfcc38"}
 ```
 
+### 1.4 - Create a User
+
 Create a user who will participate within the conversation.
 
 ```bash
@@ -77,6 +85,8 @@ curl -X POST https://api.nexmo.com/beta/users\
   -d '{"name":"jamie"}'
 ```
 
+### 1.5 - Generate a User JWT
+
 Generate a JWT for the user and take a note of it. Remember to change the `YOUR_APP_ID` value in the command.
 
 ```bash
@@ -84,6 +94,8 @@ $ USER_JWT="$(nexmo jwt:generate ./private.key sub=jamie acl='{"paths": {"/v1/se
 ```
 
 *Note: The above command saves the generated JWT to a `USER_JWT` variable.*
+
+### 1.6 - Add the User to the Conversation
 
 Finally, let's add the user to the conversation that we created. Remember to replace `CONVERSATION_ID` value.
 
@@ -111,17 +123,15 @@ Where you should see a response similar to the following:
 [{"user_id":"USR-f4a27041-744d-46e0-a75d-186ad6cfcfae","name":"MEM-fe168bd2-de89-4056-ae9c-ca3d19f9184d","user_name":"jamie","state":"JOINED"}]
 ```
 
-## Create the JavaScript App
+## 2 - Create the JavaScript App
 
-Install the Nexmo Conversation JS SDK
+With the basic setup in place we can now focus on the client-side application.
 
-```bash
-$ npm install nexmo-conversation
-```
+### 2.1 - An HTML Page with a Basic UI
 
 Create an `index.html` page and add a very basic UI for the conversation functionality.
 
-The UI contains
+The UI contains:
 
 * A simple login area. We'll be stubbing out a fake login process, but in a real application it would be expected for you to integrate with your chosen login system.
 * A list of messages. All the messages will be output to this area.
@@ -164,11 +174,23 @@ The UI contains
 </section>
 ```
 
+### 2.2 - Add the Nexmo Conversation JS SDK
+
+Install the Nexmo Conversation JS SDK
+
+```bash
+$ npm install nexmo-conversation
+```
+
 Include the Conversation JS SDK
 
 ```html
 <script src="./node_modules/nexmo-conversation/dist/conversationClient.js"></script>
 ```
+
+### 2.3 - Stubbed Out Login
+
+Next, let's stub out the login workflow.
 
 Define a variable with a value of the User JWT that was created earlier and set the value to the `USER_JWT` that was generated earlier. Create a `CONVERSATION_NAME` with a value of 'nexmo-chat' to indicate the conversation we're going to be using. 
 
@@ -179,7 +201,7 @@ var CONVERSATION_NAME = 'nexmo-chat'
 </script>
 ```
 
-Next, let's stub out the login workflow. Create an `authenicate` function that takes a `username`. For now, stub it out to always return the `USER_JWT` value. Also create a `login` function that takes a `userToken` (a JWT).
+Create an `authenicate` function that takes a `username`. For now, stub it out to always return the `USER_JWT` value. Also create a `login` function that takes a `userToken` (a JWT).
 
 ```html
 <script>
@@ -218,6 +240,8 @@ document.getElementById('login')
     }, false);
 ```
 
+### 2.4 - Connect and Login to Nexmo
+
 Within the `login` function, create an instance of the `ConversationClient` and login the current user in using the User JWT.
 
 ```js
@@ -232,6 +256,8 @@ function login(userToken) {
 
 }
 ```
+
+### 2.5 - Accessing the Conversation Object
 
 The next step is to have a user to find the `nexmo-chat` Conversation. A user can be a member of many conversations and the Conversation API persists that membership across user sessions.
 
@@ -278,6 +304,8 @@ Then find the conversation that we are looking for within the list of existing c
 
 }
 ```
+
+### 2.6 - Receiving and Sending `text` Events
 
 Once we have found the conversation we want to listen for `text` event on the `conversation` and show them in the UI.
 
