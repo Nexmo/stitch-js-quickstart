@@ -108,10 +108,10 @@ The response to this request will confirm that the user has `JOINED` the `nexmo-
 {"id":"MEM-fe168bd2-de89-4056-ae9c-ca3d19f9184d","user_id":"USR-f4a27041-744d-46e0-a75d-186ad6cfcfae","state":"JOINED","timestamp":{"joined":"2017-06-17T22:23:41.072Z"},"channel":{"type":"app"},"href":"http://conversation.local/v1/conversations/CON-8cda4c2d-9a7d-42ff-b695-ec4124dfcc38/members/MEM-fe168bd2-de89-4056-ae9c-ca3d19f9184d"}
 ```
 
-You can also check this by running the following request:
+You can also check this by running the following request, replacing `CONVERSATION_ID`:
 
 ```bash
-curl https://api.nexmo.com/beta/conversations/CON-8cda4c2d-9a7d-42ff-b695-ec4124dfcc38/members\
+$ curl https://api.nexmo.com/beta/conversations/CONVERSATION_ID/members\
  -H 'Authorization: Bearer '$APP_JWT
 ```
 
