@@ -349,4 +349,3 @@ Run `index.html` in two side-by-side browser windows to see the conversation tak
 ## Where next?
 
 * Have a look at the [Nexmo Conversation JS SDK API Reference](https://conversation-js-docs.herokuapp.com/)
-* Take a look at the next getting started guide to learn [how to invite users to a conversation](../../getting-started-2.md).
