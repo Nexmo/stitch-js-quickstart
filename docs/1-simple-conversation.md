@@ -54,10 +54,10 @@ The first item is the Application ID which you should take a note of. We'll refe
 Generate a JWT using your Application ID (`YOUR_APP_ID`).
 
 ```bash
-$ APP_JWT="$(nexmo jwt:generate ./private.key application_id=YOUR_APP_ID)"
+$ APP_JWT="$(nexmo jwt:generate ./private.key application_id=YOUR_APP_ID) exp=$(($(date +%s)+86400))"
 ```
 
-*Note: The above command saves the generated JWT to a `APP_JWT` variable.*
+*Note: The above command saves the generated JWT to a `APP_JWT` variable. It also sets the expiry of the JWT (`exp`) to one day from now.*
 
 ### 1.3 - Create a Conversation
 
@@ -126,10 +126,10 @@ Where you should see a response similar to the following:
 Generate a JWT for the user and take a note of it. Remember to change the `YOUR_APP_ID` value in the command.
 
 ```bash
-$ USER_JWT="$(nexmo jwt:generate ./private.key sub=jamie acl='{"paths": {"/v1/sessions/**": {}, "/v1/users/**": {}, "/v1/conversations/**": {}}}' application_id=YOUR_APP_ID)"
+$ USER_JWT="$(nexmo jwt:generate ./private.key sub=jamie exp=$(($(date +%s)+86400)) acl='{"paths": {"/v1/sessions/**": {}, "/v1/users/**": {}, "/v1/conversations/**": {}}}' application_id=YOUR_APP_ID)"
 ```
 
-*Note: The above command saves the generated JWT to a `USER_JWT` variable.*
+*Note: The above command saves the generated JWT to a `USER_JWT` variable. It also sets the expiry of the JWT to one day from now.*
 
 You can see the JWT for the user by running the following:
 
