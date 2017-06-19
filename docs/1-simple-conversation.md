@@ -7,14 +7,14 @@ In this getting started guide we'll demonstrate how to build a simple conversati
 This guide will introduce you to the following concepts.
 
 * **Nexmo Applications** - contain configuration for the application that you are building
-* **JWTs** (JSON Web Tokens) - the Conversation API uses JWTs for authentication. JWTs contain all the information the Nexmo platform needs to authenticate requests. JWTs also contain information such as the associated Applications, Users and permissions.
+* **JWTs** ([JSON Web Tokens](https://jwt.io/)) - the Conversation API uses JWTs for authentication. JWTs contain all the information the Nexmo platform needs to authenticate requests. JWTs also contain information such as the associated Applications, Users and permissions.
 * **Users** - users who are associated with the Nexmo Application. It's expected that Users will have a one-to-one mapping with your own authentication system.
 * **Conversations** - A thread of conversation between two or more Users.
 * **Members** - Users that are part of a conversation.
 
 ## Before you being
 
-* Ensure you have Node.JS installed
+* Ensure you have [Node.JS](https://nodejs.org/) installed
 * Create a free Nexmo account - [signup](https://dashboard.nexmo.com)
 * Install the Nexmo CLI:
 
@@ -47,7 +47,7 @@ Application created: 2c59f277-5a88-4fab-88c4-919ee28xxxxx
 Private Key saved to: private.key
 ```
 
-The first item is the Application ID which you should take a note of. We'll refer to this as `YOUR_APP_ID` later. The second value is a private key location. The private key is used generate JWTs that are used to authenticate your interactions with Nexmo.
+The first item is the Application ID which you should take a note of. We'll refer to this as `YOUR_APP_ID` later. The second value is a private key location. The private key is used to generate JWTs that are used to authenticate your interactions with Nexmo.
 
 ### 1.2 - Generate an Application JWT
 
@@ -149,6 +149,7 @@ The UI contains:
 
 * A simple login area. We'll be stubbing out a fake login process, but in a real application it would be expected for you to integrate with your chosen login system.
 * A list of messages. All the messages will be output to this area.
+* An input area. We'll use this to send a new message
 
 ```html
 <style>
@@ -206,12 +207,12 @@ Include the Conversation JS SDK
 
 Next, let's stub out the login workflow.
 
-Define a variable with a value of the User JWT that was created earlier and set the value to the `USER_JWT` that was generated earlier. Create a `CONVERSATION_NAME` with a value of 'nexmo-chat' to indicate the conversation we're going to be using. 
+Define a variable with a value of the User JWT that was created earlier and set the value to the `USER_JWT` that was generated earlier. Create a `CONVERSATION_ID` with the value of the Conversation ID that was created earlier to indicate the conversation we're going to be using. 
 
 ```html
 <script>
 var USER_JWT = 'YOUR USER JWT';
-var CONVERSATION_NAME = 'nexmo-chat'
+var CONVERSATION_ID = 'YOUR CONVERSATION ID';
 </script>
 ```
 
@@ -220,7 +221,7 @@ Create an `authenicate` function that takes a `username`. For now, stub it out t
 ```html
 <script>
 var USER_JWT = 'YOUR USER JWT';
-var CONVERSATION_NAME = 'nexmo-chat'
+var CONVERSATION_ID = 'YOUR CONVERSATION ID';
 
 function authenticate(username) {
   return USER_JWT;
@@ -298,19 +299,14 @@ Then find the conversation that we are looking for within the list of existing c
   }).then(function(conversations) {
       console.log('*** Retrieved conversations', conversations);
 
-      // Find the UUID of the conversation we are expecting to join
-      var uuid = Object.keys(conversations).find(function(id) {
-          return conversations[id].name === CONVERSATION_NAME;
-      });
-
-      if (uuid !== undefined) {
-          console.log('*** Conversation found', conversations[uuid].name, uuid);
+      if (conversations[CONVERSATION_ID] !== undefined) {
+          console.log('*** Conversation found', conversations[CONVERSATION_ID].name, CONVERSATION_ID);
 
           // Resolve the conversation
-          return conversations[uuid];
+          return conversations[CONVERSATION_ID];
       }
       else {
-          throw new Error('*** Could not find expected conversation', conversation.name);
+          throw new Error('*** Could not find expected conversation', CONVERSATION_ID);
       }
   }).catch(function(error) {
     console.error(error);
