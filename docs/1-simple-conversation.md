@@ -7,14 +7,14 @@ In this getting started guide we'll demonstrate how to build a simple conversati
 This guide will introduce you to the following concepts.
 
 * **Nexmo Applications** - contain configuration for the application that you are building
-* **JWTs** (JSON Web Tokens) - the Conversation API uses JWTs for authentication. JWTs contain all the information the Nexmo platform needs to authenticate requests. JWTs also contain information such as the associated Applications, Users and permissions.
+* **JWTs** ([JSON Web Tokens](https://jwt.io/)) - the Conversation API uses JWTs for authentication. JWTs contain all the information the Nexmo platform needs to authenticate requests. JWTs also contain information such as the associated Applications, Users and permissions.
 * **Users** - users who are associated with the Nexmo Application. It's expected that Users will have a one-to-one mapping with your own authentication system.
 * **Conversations** - A thread of conversation between two or more Users.
 * **Members** - Users that are part of a conversation.
 
 ## Before you being
 
-* Ensure you have Node.JS installed
+* Ensure you have [Node.JS](https://nodejs.org/) installed
 * Create a free Nexmo account - [signup](https://dashboard.nexmo.com)
 * Install the Nexmo CLI:
 
@@ -47,7 +47,7 @@ Application created: 2c59f277-5a88-4fab-88c4-919ee28xxxxx
 Private Key saved to: private.key
 ```
 
-The first item is the Application ID which you should take a note of. We'll refer to this as `YOUR_APP_ID` later. The second value is a private key location. The private key is used generate JWTs that are used to authenticate your interactions with Nexmo.
+The first item is the Application ID which you should take a note of. We'll refer to this as `YOUR_APP_ID` later. The second value is a private key location. The private key is used to generate JWTs that are used to authenticate your interactions with Nexmo.
 
 ### 1.2 - Generate an Application JWT
 
@@ -149,6 +149,7 @@ The UI contains:
 
 * A simple login area. We'll be stubbing out a fake login process, but in a real application it would be expected for you to integrate with your chosen login system.
 * A list of messages. All the messages will be output to this area.
+* An input area. We'll use this to send a new message
 
 ```html
 <style>
