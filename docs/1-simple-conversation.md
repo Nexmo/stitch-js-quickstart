@@ -206,12 +206,15 @@ Include the Conversation JS SDK
 
 Next, let's stub out the login workflow.
 
-Define a variable with a value of the User JWT that was created earlier and set the value to the `USER_JWT` that was generated earlier. Create a `CONVERSATION_NAME` with a value of 'nexmo-chat' to indicate the conversation we're going to be using. 
+Define a variable with a value of the User JWT that was created earlier and set the value to the `USER_JWT` that was generated earlier. Create a `CONVERSATION_NAME` with a value of 'nexmo-chat' to indicate the conversation we're going to be using. Also, create a variable called `conversation` that will eventually reference the conversation object.
 
 ```html
 <script>
 var USER_JWT = 'YOUR USER JWT';
+
 var CONVERSATION_NAME = 'nexmo-chat'
+
+var conversation = null;
 </script>
 ```
 
@@ -321,10 +324,12 @@ Then find the conversation that we are looking for within the list of existing c
 
 ### 2.6 - Receiving and Sending `text` Events
 
-Once we have found the conversation we want to listen for `text` event on the `conversation` and show them in the UI.
+Once we have found the conversation, ensure the `conversation` variable is updated to correctly reference that conversation object. We then want to listen for `text` event on the `conversation` and show them in the UI.
 
 ```js
-  }).then(function(conversation) {
+  }).then(function(conv) {
+      conversation = conv;
+
       console.log('*** Conversation Member', conversation.me);
 
       // Bind to events on the conversation
@@ -342,7 +347,7 @@ Once we have found the conversation we want to listen for `text` event on the `c
 }
 ```
 
-Finally, when the user clicks the `send` button in the UI send whatever text has been placed in the `textarea`.
+Finally, when the user clicks the `send` button in the UI send whatever text has been placed in the `textarea`. This is achieved by calling `sendText` on the `conversation` reference.
 
 ```js
   }).catch(function(error) {

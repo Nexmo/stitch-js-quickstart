@@ -41,6 +41,8 @@
 
     var CONVERSATION_NAME = 'nexmo-chat';
 
+    var conversation = null;
+
     function authenticate(username) {
         return USER_JWT;
     }
@@ -73,7 +75,9 @@
             else {
                 throw new Error('*** Could not find expected conversation', conversation.name);
             }
-        }).then(function(conversation) {
+        }).then(function(conv) {
+            conversation = conv;
+
             console.log('*** Conversation Member', conversation.me);
 
             // Bind to events on the conversation
