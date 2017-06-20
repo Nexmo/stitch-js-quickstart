@@ -39,7 +39,9 @@
 <script>
     var USER_JWT = 'USER JWT';
 
-    var CONVERSATION_ID = 'CONVERSATION ID';
+    var CONVERSATION_ID = 'YOUR CONVERSATION ID';
+
+    var conversation = null;
 
     function authenticate(username) {
         return USER_JWT;
@@ -68,7 +70,9 @@
             else {
                 throw new Error('*** Could not find expected conversation', CONVERSATION_ID);
             }
-        }).then(function(conversation) {
+        }).then(function(conv) {
+            conversation = conv;
+
             console.log('*** Conversation Member', conversation.me);
 
             // Bind to events on the conversation
@@ -82,7 +86,7 @@
         }).catch(function(error) {
             console.error(error);
         });
-    
+
     }
 
     document.getElementById('login')
