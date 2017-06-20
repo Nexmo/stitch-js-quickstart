@@ -39,7 +39,7 @@
 <script>
     var USER_JWT = 'USER JWT';
 
-    var CONVERSATION_NAME = 'nexmo-chat';
+    var CONVERSATION_ID = 'YOUR CONVERSATION ID';
 
     var conversation = null;
 
@@ -61,19 +61,14 @@
         }).then(function(conversations) {
             console.log('*** Retrieved conversations', conversations);
 
-            // Find the UUID of the conversation we are expecting to join
-            var uuid = Object.keys(conversations).find(function(id) {
-                return conversations[id].name === CONVERSATION_NAME;
-            });
-
-            if (uuid !== undefined) {
-                console.log('*** Conversation found', conversations[uuid].name, uuid);
+            if (conversations[CONVERSATION_ID] !== undefined) {
+                console.log('*** Conversation found', conversations[CONVERSATION_ID].name, CONVERSATION_ID);
 
                 // Resolve the conversation
-                return conversations[uuid];
+                return conversations[CONVERSATION_ID];
             }
             else {
-                throw new Error('*** Could not find expected conversation', conversation.name);
+                throw new Error('*** Could not find expected conversation', CONVERSATION_ID);
             }
         }).then(function(conv) {
             conversation = conv;
