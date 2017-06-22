@@ -102,7 +102,7 @@ $ curl -X POST https://api.nexmo.com/beta/conversations/CONVERSATION_ID/members\
  -H 'Authorization: Bearer '$APP_JWT -H 'Content-Type:application/json' -d '{"action":"join", "user_id":"USER_ID", "channel":{"type":"app"}}'
 ```
 
-The response to this request will confirm that the user has `JOINED` the `nexmo-chat` conversation.
+The response to this request will confirm that the user has `JOINED` the "Nexmo Chat" conversation.
 
 ```json
 {"id":"MEM-fe168bd2-de89-4056-ae9c-ca3d19f9184d","user_id":"USR-f4a27041-744d-46e0-a75d-186ad6cfcfae","state":"JOINED","timestamp":{"joined":"2017-06-17T22:23:41.072Z"},"channel":{"type":"app"},"href":"http://conversation.local/v1/conversations/CON-8cda4c2d-9a7d-42ff-b695-ec4124dfcc38/members/MEM-fe168bd2-de89-4056-ae9c-ca3d19f9184d"}
@@ -280,7 +280,7 @@ function login(userToken) {
 
 ### 2.5 - Accessing the Conversation Object
 
-The next step is to have a user to find the `nexmo-chat` Conversation. A user can be a member of many conversations and the Conversation API persists that membership across user sessions.
+The next step is to have a user to retrieve the Conversation that was created. A user can be a member of many conversations and the Conversation API persists that membership across user sessions.
 
 So, the first thing to do is get a list of conversations that the logged-in user is either already a member or has been invited to join.
 
@@ -299,7 +299,7 @@ So, the first thing to do is get a list of conversations that the logged-in user
 }
 ```
 
-Then find the conversation that we are looking for within the list of existing conversations that the user is a member of. If it does exist we resolve with that conversation. If the conversation does not exist we throw an `Error`.
+Then retrieve the conversation from the list of existing conversations that the user is a member of. If it does exist we resolve with that conversation. If the conversation does not exist we throw an `Error`.
 
 ```js
   }).then(function(conversations) {
