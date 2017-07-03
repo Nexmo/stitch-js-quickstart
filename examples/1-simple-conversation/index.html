@@ -1,8 +1,12 @@
-<!-- application_id 8574eb16-5fee-4911-8c41-58d37b10f5cf -->
+<!-- application_id 20ac1d19-6ea3-4ff0-8831-7e74158cca5d -->
 <style>
-    #messages {
+    #login, #messages {
         width: 80%;
         height: 300px;
+    }
+
+    .messages {
+        display: none;
     }
 
     #message {
@@ -15,68 +19,91 @@
         height: 30px;
     }
 </style>
-<div id="messages"></div>
-<textarea id="message"></textarea>
-<button id="send">Send</button>
+
+<section class="login">
+    <h1>Login</h1>
+    <form id="login">
+        <input type="text" id="username" placeholder="Username" required />
+        <input type="submit" value="Login" />
+    </form>
+</section>
+
+<section class="messages">
+    <h1>Messages</h1>
+    <div id="messages"></div>
+    <textarea id="message"></textarea>
+    <button id="send">Send</button>
+</section>
 
 <script src="./node_modules/nexmo-conversation/dist/conversationClient.js"></script>
 <script>
-    var userToken = "USER_TOKEN";
+    var USER_JWT = 'USER JWT';
 
-    var conversation = {
-        name: 'nexmo-chat'
-    };
+    var CONVERSATION_ID = 'YOUR CONVERSATION ID';
 
-    var rtc = new ConversationClient({
-        debug: false
-    });
+    var conversation = null;
 
-    rtc.login(userToken).then(function(app) {
-        console.log('*** Logged into app', app);
+    function authenticate(username) {
+        return USER_JWT;
+    }
 
-        // Get a list of conversations within the application
-        return app.getConversations();
-    }).then(function(conversations) {
-        console.log('*** Retrieved conversations', conversations);
+    function login(userToken) {
 
-        // Check if the user is either already a member or has been invited to join
-        var uuid = Object.keys(conversations).find(function(id) {
-            return conversations[id].name === conversation.name;
+        var rtc = new ConversationClient({
+            debug: false
         });
 
-        if (uuid !== undefined) {
-            // Conversation exists
-            console.log('*** Conversation exists with UUID', uuid);
-            return conversations[uuid];
-        } else {
-            // It doesn't exist. Create it.
-            console.log('*** Creating a new conversation', conversation);
-            return rtc.app.newConversation(conversation);
-        }
-    }).then(function(conv) {
-        conversation = conv;
+        rtc.login(userToken).then(function(app) {
+            console.log('*** Logged into app', app);
 
-        console.log('*** Joining conversation', conversation, conversation.me);
-        if (conversation.me && conversation.me.state === 'JOINED') {
-            // Already a member of the conversation
-            return conversation.me;
-        } else {
-            // Need to join
-            return conversation.join(rtc.app.me);
-        }
-    }).then(function(member) {
-        console.log('*** Joined as ' + member.name);
+            // Get a list of conversations within the application
+            return app.getConversations();
+        }).then(function(conversations) {
+            console.log('*** Retrieved conversations', conversations);
 
-        conversation.on('text', function(sender, message) {
-            console.log('*** Message received', sender, message);
-            var messagesEl = document.getElementById('messages');
-            var text = sender.name + ': ' + message.text + '\n' +
-                messagesEl.innerText;
-            messagesEl.innerText = text;
+            if (conversations[CONVERSATION_ID] !== undefined) {
+                console.log('*** Conversation found', conversations[CONVERSATION_ID].name, CONVERSATION_ID);
+
+                // Resolve the conversation
+                return conversations[CONVERSATION_ID];
+            }
+            else {
+                throw new Error('*** Could not find expected conversation', CONVERSATION_ID);
+            }
+        }).then(function(conv) {
+            conversation = conv;
+
+            console.log('*** Conversation Member', conversation.me);
+
+            // Bind to events on the conversation
+            conversation.on('text', function(sender, message) {
+                console.log('*** Message received', sender, message);
+                var messagesEl = document.getElementById('messages');
+                var text = sender.name + ': ' + message.text + '\n' +
+                    messagesEl.innerText;
+                messagesEl.innerText = text;
+            });
+        }).catch(function(error) {
+            console.error(error);
         });
-    }).catch(function(error) {
-        console.error(error);
-    });
+    
+    }
+
+    document.getElementById('login')
+        .addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var username = document.getElementById('username').value;
+            var userToken = authenticate(username);
+            if(userToken) {
+                document.getElementsByClassName('messages')[0].style.display = 'block';
+                document.getElementsByClassName('login')[0].style.display = 'none';
+                login(userToken);
+            }
+            else {
+                alert(`unknown user "${username}"`);
+            }
+        }, false);
 
     document.getElementById('send')
         .addEventListener('click', function() {

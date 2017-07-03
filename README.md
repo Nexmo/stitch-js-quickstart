@@ -15,6 +15,7 @@ The Nexmo Conversation API enables you to build conversation features where comm
 Currently the Conversation API offers basic IP messaging with the following features:
 
 - Conversation creation and management
+- User creation and management
 - Sending and receiving text
 - Member invite management
 - Cache support
