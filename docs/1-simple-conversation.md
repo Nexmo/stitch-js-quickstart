@@ -352,6 +352,7 @@ Finally, when the user clicks the `send` button in the UI send whatever text has
     .addEventListener('click', function() {
       var message = document.getElementById('message').value;
       conversation.sendText(message);
+      document.getElementById('message').value = '';
     }, false);
 
 }
