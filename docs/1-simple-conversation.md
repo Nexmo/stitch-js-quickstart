@@ -315,8 +315,6 @@ Then retrieve the conversation from the list of existing conversations that the 
   }).catch(function(error) {
     console.error(error);
   });
-
-}
 ```
 
 ### 2.6 - Receiving and Sending `text` Events
