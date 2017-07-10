@@ -295,8 +295,6 @@ So, the first thing to do is get a list of conversations that the logged-in user
   }).catch(function(error) {
     console.error(error);
   });
-
-}
 ```
 
 Then retrieve the conversation from the list of existing conversations that the user is a member of. If it does exist we resolve with that conversation. If the conversation does not exist we throw an `Error`.
