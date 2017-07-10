@@ -54,7 +54,7 @@ The first item is the Application ID which you should take a note of. We'll refe
 Generate a JWT using your Application ID (`YOUR_APP_ID`).
 
 ```bash
-$ APP_JWT="$(nexmo jwt:generate ./private.key application_id=YOUR_APP_ID exp=$(($(date +%s)+86400))"
+$ APP_JWT="$(nexmo jwt:generate ./private.key application_id=YOUR_APP_ID exp=$(($(date +%s)+86400)))"
 ```
 
 *Note: The above command saves the generated JWT to a `APP_JWT` variable. It also sets the expiry of the JWT (`exp`) to one day from now.*
