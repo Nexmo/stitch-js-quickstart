@@ -219,7 +219,7 @@ var conversation = null;
 </script>
 ```
 
-Create an `authenicate` function that takes a `username`. For now, stub it out to always return the `USER_JWT` value. Also create a `login` function that takes a `userToken` (a JWT).
+Create an `authenticate` function that takes a `username`. For now, stub it out to always return the `USER_JWT` value. Also create a `login` function that takes a `userToken` (a JWT).
 
 ```html
 <script>
