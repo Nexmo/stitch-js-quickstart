@@ -12,7 +12,7 @@ This guide will introduce you to the following concepts.
 * **Conversations** - A thread of conversation between two or more Users.
 * **Members** - Users that are part of a conversation.
 
-## Before you being
+## Before you begin
 
 * Ensure you have [Node.JS](https://nodejs.org/) installed
 * Create a free Nexmo account - [signup](https://dashboard.nexmo.com)
