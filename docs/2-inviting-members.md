@@ -22,6 +22,12 @@ _Note: The steps within this section can all be done dynamically via server-side
 
 ### 1.1 - Create another User
 
+If you're continuing on from the previous guide you may already have a `APP_JWT`. If not, generate a JWT using your Application ID (`YOUR_APP_ID`).
+
+```bash
+$ APP_JWT="$(nexmo jwt:generate ./private.key application_id=YOUR_APP_ID exp=$(($(date +%s)+86400)))"
+```
+
 Create another user who will participate within the conversation.
 
 ```bash
@@ -67,7 +73,7 @@ Update `index.html` with a placeholder section to list conversations.
 ```html
   <style>
     .conversations {
-        display: block;
+        display: none;
     }
   </style>
   <section class="conversations">
@@ -84,7 +90,8 @@ Define a variable with a value of the second User JWT that was created earlier a
 
 ```html
 <script>
-...var conversation = null;
+...
+var conversation = null;
 
 var SECOND_USER_JWT = 'SECOND USER JWT';
 
@@ -104,7 +111,7 @@ function authenticate(username) {
 </script>
 ```
 
-Next, update the login form to show the conversation elements instead of the message elements when the form is submitted.
+Next, update the login form handler to show the conversation elements instead of the message elements when the form is submitted.
 
 ```js
 
@@ -127,7 +134,7 @@ document.getElementById('login')
 
 ### 2.3 - Update the JS needed to list the Conversations
 
-In the previous quick start guide we retrieved the conversation from the list of existing conversations that the user is a member of. This time we're going to list the conversations that the user is a member, allowing the user to select the conversation they want to join. We're going to replace the following part in the code:
+In the previous quick start guide we retrieved the conversation from the list of existing conversations that the user is a member of using a hard-coded `CONVERSATION_ID`. This time we're going to list the conversations that the user is a member, allowing the user to select the conversation they want to join. We're going to replace the following part in the code:
 
 ```js
   }).then(function(conversations) {
@@ -227,13 +234,14 @@ function selectConversation() {
 The next step is to update the `login` method to listen on the `application` object for the `member:invited` event. Once we receive an invite, we're going to automatically join the user to that Conversation.
 
 ```js
-    ...rtc.login(userToken).then(function(app) {
+    ...
+    rtc.login(userToken).then(function(app) {
         console.log('*** Logged into app', app);
 
         app.on("member:invited",
             function(data, invitation) {
                 //identify the sender.
-                console.log("*** Invitation received from: " + invitation.body.invited_by);
+                console.log("*** Invitation received:", invitation);
 
                 //accept an invitation.
                 app.getConversation(invitation.cid || invitation.body.cname)
@@ -247,7 +255,8 @@ The next step is to update the `login` method to listen on the `application` obj
 
         // Get a list of conversations within the application
         return app.getConversations();
-    });
+    }).then(function(conversations) {
+        ...
 
 }
 ```
@@ -256,7 +265,7 @@ Now run `index.html` in two side-by-side browser windows, making sure to login w
 
 ### 2.6 - Invite the second user to the conversations
 
-Finally, let's invite the user to the conversation that we created. In your terminal, run the following command and remember to replace `CONVERSATION_ID` and `USER_ID` values.
+Finally, let's invite the user to the conversation that we created. In your terminal, run the following command and remember to replace `CONVERSATION_ID` in the URL with the ID of the Conversation you created in the first guide and the `USER_ID` with the one you got when creating the User for `alice`.
 
 ```bash
 $ curl -X POST https://api.nexmo.com/beta/conversations/CONVERSATION_ID/members\
@@ -269,7 +278,7 @@ The response to this request will confirm that the user has been `INVITED` the "
 {"id":"MEM-fe168bd2-de89-4056-ae9c-ca3d19f9184d","user_id":"USR-f4a27041-744d-46e0-a75d-186ad6cfcfae","state":"INVITED","timestamp":{"invited":"2017-06-17T22:23:41.072Z"},"channel":{"type":"app"},"href":"http://conversation.local/v1/conversations/CON-8cda4c2d-9a7d-42ff-b695-ec4124dfcc38/members/MEM-fe168bd2-de89-4056-ae9c-ca3d19f9184d"}
 ```
 
-You can also check this by running the following request, replacing `CONVERSATION_ID`:
+You can also check that `alice` was invited by running the following request, replacing `CONVERSATION_ID`:
 
 ```bash
 $ curl https://api.nexmo.com/beta/conversations/CONVERSATION_ID/members\
