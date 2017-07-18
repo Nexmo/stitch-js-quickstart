@@ -1,6 +1,7 @@
 <!-- application_id 20ac1d19-6ea3-4ff0-8831-7e74158cca5d -->
 <style>
-    #login, #messages {
+    #login,
+    #messages {
         width: 80%;
         height: 300px;
     }
@@ -66,8 +67,7 @@
 
                 // Resolve the conversation
                 return conversations[CONVERSATION_ID];
-            }
-            else {
+            } else {
                 throw new Error('*** Could not find expected conversation', CONVERSATION_ID);
             }
         }).then(function(conv) {
@@ -86,7 +86,7 @@
         }).catch(function(error) {
             console.error(error);
         });
-    
+
     }
 
     document.getElementById('login')
@@ -95,19 +95,19 @@
 
             var username = document.getElementById('username').value;
             var userToken = authenticate(username);
-            if(userToken) {
+            if (userToken) {
                 document.getElementsByClassName('messages')[0].style.display = 'block';
                 document.getElementsByClassName('login')[0].style.display = 'none';
                 login(userToken);
-            }
-            else {
+            } else {
                 alert(`unknown user "${username}"`);
             }
         }, false);
 
     document.getElementById('send')
         .addEventListener('click', function() {
-            var message = document.getElementById('message').value;
-            conversation.sendText(message);
+            var message = document.getElementById('message');
+            conversation.sendText(message.value);
+            message.value = '';
         }, false);
 </script>
