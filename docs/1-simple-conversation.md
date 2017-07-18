@@ -12,7 +12,7 @@ This guide will introduce you to the following concepts.
 * **Conversations** - A thread of conversation between two or more Users.
 * **Members** - Users that are part of a conversation.
 
-## Before you being
+## Before you begin
 
 * Ensure you have [Node.JS](https://nodejs.org/) installed
 * Create a free Nexmo account - [signup](https://dashboard.nexmo.com)
@@ -54,7 +54,7 @@ The first item is the Application ID which you should take a note of. We'll refe
 Generate a JWT using your Application ID (`YOUR_APP_ID`).
 
 ```bash
-$ APP_JWT="$(nexmo jwt:generate ./private.key application_id=YOUR_APP_ID exp=$(($(date +%s)+86400))"
+$ APP_JWT="$(nexmo jwt:generate ./private.key application_id=YOUR_APP_ID exp=$(($(date +%s)+86400)))"
 ```
 
 *Note: The above command saves the generated JWT to a `APP_JWT` variable. It also sets the expiry of the JWT (`exp`) to one day from now.*
@@ -219,7 +219,7 @@ var conversation = null;
 </script>
 ```
 
-Create an `authenicate` function that takes a `username`. For now, stub it out to always return the `USER_JWT` value. Also create a `login` function that takes a `userToken` (a JWT).
+Create an `authenticate` function that takes a `username`. For now, stub it out to always return the `USER_JWT` value. Also create a `login` function that takes a `userToken` (a JWT).
 
 ```html
 <script>
@@ -356,6 +356,7 @@ Finally, when the user clicks the `send` button in the UI send whatever text has
     .addEventListener('click', function() {
       var message = document.getElementById('message').value;
       conversation.sendText(message);
+      document.getElementById('message').value = '';
     }, false);
 
 }
