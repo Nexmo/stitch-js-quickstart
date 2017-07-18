@@ -1,14 +1,14 @@
 # Getting Started with the Nexmo Conversation JS SDK
 
-In this getting started guide we'll demonstrate how to add users to the simple conversation app we built.
+In this getting started guide we'll cover creating a second user and inviting them to the Conversation we created in the [simple conversation](1-simple-conversation.md) getting started guide. From there we'll list the conversations that are available to the user and upon receiving an invite to new conversations we'll automatically join them.
 
 ## Concepts
 
 This guide will introduce you to the following concepts.
 
 * **Invites** - you can invite users to a conversation
-* **Application Events** - events that fire on an Application, before you are a Member of a Conversation
-* **Conversation Events** - events that fire on an Conversation, after you are a Member
+* **Application Events** - `member:invited` events that fire on an Application, before you are a Member of a Conversation
+* **Conversation Events** - `member:joined` and `text` events that fire on an Conversation, after you are a Member
 
 
 ## Before you being
@@ -18,7 +18,7 @@ This guide will introduce you to the following concepts.
 
 ## 1 - Setup
 
-_Note: The steps within this section can all be done dynamically via server-side logic. But in order to get the client-side functionality we're going to manually run through setup._
+_Note: The steps within this section can all be done dynamically via server-side logic. But in order to get the client-side functionality we're going to manually run through the setup._
 
 ### 1.1 - Create another User
 
@@ -41,13 +41,13 @@ Take a note of the `id` attribute as this is the unique identifier for the user 
 
 ### 1.2 - Generate a User JWT
 
-Generate a JWT for the user and take a note of it. Remember to change the `YOUR_APP_ID` value in the command.
+Generate a JWT for the user. The JWT will be stored to the `SECOND_USER_JWT` variable. Remember to change the `YOUR_APP_ID` value in the command.
 
 ```bash
 $ SECOND_USER_JWT="$(nexmo jwt:generate ./private.key sub=alice exp=$(($(date +%s)+86400)) acl='{"paths": {"/v1/sessions/**": {}, "/v1/users/**": {}, "/v1/conversations/**": {}}}' application_id=YOUR_APP_ID)"
 ```
 
-*Note: The above command saves the generated JWT to a `SECOND_USER_JWT` variable. It also sets the expiry of the JWT to one day from now.*
+*Note: The above command sets the expiry of the JWT to one day from now.*
 
 You can see the JWT for the user by running the following:
 
@@ -127,7 +127,7 @@ document.getElementById('login')
 
 ### 2.3 - Update the JS needed to list the Conversations
 
-In the previous quick start guide we retrieved the conversation from the list of existing conversations that the user is a member of. We're going to list the conversations that the user is a member of instead, allowing the user to select the conversation he wants to join. We're going to replace the following part in the code:
+In the previous quick start guide we retrieved the conversation from the list of existing conversations that the user is a member of. This time we're going to list the conversations that the user is a member, allowing the user to select the conversation they want to join. We're going to replace the following part in the code:
 
 ```js
   }).then(function(conversations) {
@@ -162,29 +162,29 @@ In the previous quick start guide we retrieved the conversation from the list of
 }
 ```
 
-With the following bit. The code takes the list of conversations and saves it in the `conversationList` variable we created earlier. It then proceeds in creating the HTML wrapper element for the conversations. The code then  cycles through the conversations, creating HTML elements for each of them, binding a click event listener, `selectConversation` to each of them, and then adds the element to the wrapper element. Finally, the code checks if there were any conversations added, and if not lists a message and then appends the wrapper element to the UI.
+With the following that takes the list of conversations and saves it in the `conversationList` variable we created earlier. It then proceeds in creating the HTML wrapper element for the conversations. The code then cycles through the conversations, creating HTML elements for each of them, binding a click event listener, `selectConversation` to each of them, and then adds the element to the wrapper element. Finally, the code checks if there were any conversations added, and if not lists a message and then appends the wrapper element to the UI.
 
 ```js
-}).then(function(conversations) {
-    console.log('*** Retrieved conversations', conversations);
-    conversationList = conversations
+    }).then(function(conversations) {
+        console.log('*** Retrieved conversations', conversations);
+        conversationList = conversations
 
-    var conversationsElement = document.createElement("ul");
-    for (var id in conversations) {
-      var conversationElement = document.createElement("li");
-      conversationElement.textContent = conversations[id].display_name;
-      conversationElement.addEventListener("click", selectConversation.bind(id));
-      conversationsElement.appendChild(conversationElement);
-    }
+        var conversationsElement = document.createElement("ul");
+        for (var id in conversations) {
+            var conversationElement = document.createElement("li");
+            conversationElement.textContent = conversations[id].display_name;
+            conversationElement.addEventListener("click", selectConversation.bind(id));
+            conversationsElement.appendChild(conversationElement);
+        }
 
-    if (!conversationsElement.childNodes.length) {
-        conversationsElement.textContent = "You are not a member of any conversation"
-    }
+        if (!conversationsElement.childNodes.length) {
+            conversationsElement.textContent = "You are not a member of any conversation"
+        }
 
-    document.getElementsByClassName('conversations')[0].appendChild(conversationsElement)
-}).catch(function(error) {
-    console.error(error);
-});
+        document.getElementsByClassName('conversations')[0].appendChild(conversationsElement)
+    }).catch(function(error) {
+        console.error(error);
+    });
 
 }
 ```
@@ -227,27 +227,27 @@ function selectConversation() {
 The next step is to update the `login` method to listen on the `application` object for the `member:invited` event. Once we receive an invite, we're going to automatically join the user to that Conversation.
 
 ```js
-...rtc.login(userToken).then(function(app) {
-    console.log('*** Logged into app', app);
+    ...rtc.login(userToken).then(function(app) {
+        console.log('*** Logged into app', app);
 
-    app.on("member:invited",
-        function(data, invitation) {
-            //identify the sender.
-            console.log("*** Invitation received from: " + invitation.body.invited_by);
+        app.on("member:invited",
+            function(data, invitation) {
+                //identify the sender.
+                console.log("*** Invitation received from: " + invitation.body.invited_by);
 
-            //accept an invitation.
-            app.getConversation(invitation.cid || invitation.body.cname)
-                .then(function(conversation_to_join) {
-                    conversation_to_join.join(app.me, invitation.body.user.member_id);
-                    var username = document.getElementById('username').value;
-                    var userToken = authenticate(username);
-                    login(userToken);
-                });
-        });
+                //accept an invitation.
+                app.getConversation(invitation.cid || invitation.body.cname)
+                    .then(function(conversation_to_join) {
+                        conversation_to_join.join(app.me, invitation.body.user.member_id);
+                        var username = document.getElementById('username').value;
+                        var userToken = authenticate(username);
+                        login(userToken);
+                    });
+            });
 
-    // Get a list of conversations within the application
-    return app.getConversations();
-})
+        // Get a list of conversations within the application
+        return app.getConversations();
+    });
 
 }
 ```
@@ -282,7 +282,7 @@ Where you should see a response similar to the following:
 [{"user_id":"USR-f4a27041-744d-46e0-a75d-186ad6cfcfae","name":"MEM-fe168bd2-de89-4056-ae9c-ca3d19f9184d","user_name":"alice","state":"INVITED"}]
 ```
 
-Return to the previously opened browser windows so you can see `alice` has a conversation listed now, and proceed to chat between `alice` and `jamie`.
+Return to the previously opened browser windows so you can see `alice` has a conversation listed now. You can click the conversation name and proceed to chat between `alice` and `jamie`.
 
 ## Where next?
 
