@@ -1,0 +1,159 @@
+<!-- application_id 20ac1d19-6ea3-4ff0-8831-7e74158cca5d -->
+<style>
+    #login,
+    #messages {
+        width: 80%;
+        height: 300px;
+    }
+
+    .messages {
+        display: none;
+    }
+
+    #message {
+        width: 80%;
+        height: 30px;
+        float: left;
+    }
+
+    #send {
+        height: 30px;
+    }
+
+    .conversations {
+        display: none;
+    }
+</style>
+
+<section class="login">
+    <h1>Login</h1>
+    <form id="login">
+        <input type="text" id="username" placeholder="Username" required />
+        <input type="submit" value="Login" />
+    </form>
+</section>
+
+<section class="conversations">
+    <h1>Conversations</h1>
+</section>
+
+<section class="messages">
+    <h1>Messages</h1>
+    <div id="messages"></div>
+    <textarea id="message"></textarea>
+    <button id="send">Send</button>
+</section>
+
+<script src="./node_modules/nexmo-conversation/dist/conversationClient.js"></script>
+<script>
+    var USER_JWT = 'USER JWT';
+
+    var CONVERSATION_ID = 'YOUR CONVERSATION ID';
+
+    var conversation = null;
+
+    var SECOND_USER_JWT = 'SECOND USER JWT';
+    var conversationList = null;
+
+    function authenticate(username) {
+        return username.toLowerCase() === "jamie" ? USER_JWT : SECOND_USER_JWT;
+    }
+
+    function login(userToken) {
+
+        var rtc = new ConversationClient({
+            debug: false
+        });
+
+        rtc.login(userToken).then(function(app) {
+            console.log('*** Logged into app', app);
+
+            app.on("member:invited",
+                function(data, invitation) {
+                    //identify the sender.
+                    console.log("*** Invitation received from: " + invitation.body.invited_by);
+
+                    //accept an invitation.
+                    app.getConversation(invitation.cid || invitation.body.cname)
+                        .then(function(conversation_to_join) {
+                            conversation_to_join.join(app.me, invitation.body.user.member_id);
+                            var username = document.getElementById('username').value;
+                            var userToken = authenticate(username);
+                            login(userToken);
+                        });
+                });
+
+            // Get a list of conversations within the application
+            return app.getConversations();
+        }).then(function(conversations) {
+            console.log('*** Retrieved conversations', conversations);
+            conversationList = conversations
+
+            var conversationsElement = document.createElement("ul");
+            for (var id in conversations) {
+                var conversationElement = document.createElement("li");
+                conversationElement.textContent = conversations[id].display_name;
+                conversationElement.addEventListener("click", selectConversation.bind(id));
+                conversationsElement.appendChild(conversationElement);
+            }
+
+            if (!conversationsElement.childNodes.length) {
+                conversationsElement.textContent = "You are not a member of any conversation"
+            }
+
+            document.getElementsByClassName('conversations')[0].appendChild(conversationsElement)
+        }).catch(function(error) {
+            console.error(error);
+        });
+
+    }
+
+    document.getElementById('login')
+        .addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var username = document.getElementById('username').value;
+            var userToken = authenticate(username);
+            if (userToken) {
+                document.getElementsByClassName('conversations')[0].style.display = 'block';
+                document.getElementsByClassName('login')[0].style.display = 'none';
+                login(userToken);
+            } else {
+                alert(`unknown user "${username}"`);
+            }
+        }, false);
+
+    function selectConversation() {
+        conversation = conversationList[this];
+
+        document.getElementsByClassName('conversations')[0].style.display = 'none';
+        document.getElementsByClassName('messages')[0].style.display = 'block';
+
+        console.log('*** Conversation Member', conversation.me);
+
+        // Bind to events on the conversation
+        conversation.on('text', function(sender, message) {
+            console.log('*** Message received', sender, message);
+            var messagesEl = document.getElementById('messages');
+            var text = sender.name + ': ' + message.text + '\n' +
+                messagesEl.innerText;
+            messagesEl.innerText = text;
+        });
+
+        conversation.on("member:joined",
+            function(data, info) {
+                console.log("*** " + info.user.name + " joined the conversation");
+                var messagesEl = document.getElementById('messages');
+                var text = info.user.name + ' joined the conversation\n' +
+                    messagesEl.innerText;
+                messagesEl.innerText = text;
+            });
+    }
+
+    document.getElementById('send')
+        .addEventListener('click', function() {
+            var message = document.getElementById('message');
+            conversation.sendText(message.value);
+            message.value = '';
+        }, false);
+</script>

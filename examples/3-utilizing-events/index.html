@@ -1,0 +1,237 @@
+<!-- application_id 20ac1d19-6ea3-4ff0-8831-7e74158cca5d -->
+<style>
+    #login,
+    #messages {
+        width: 80%;
+        height: 300px;
+        overflow: scroll;
+    }
+
+    .messages {
+        display: none;
+    }
+
+    #message {
+        width: 80%;
+        height: 30px;
+        float: left;
+    }
+
+    #send {
+        height: 30px;
+    }
+
+    .conversations {
+        display: none;
+    }
+</style>
+
+<section class="login">
+    <h1>Login</h1>
+    <form id="login">
+        <input type="text" id="username" placeholder="Username" required />
+        <input type="submit" value="Login" />
+    </form>
+</section>
+
+<section class="conversations">
+    <h1>Conversations</h1>
+</section>
+
+<section class="messages">
+    <button id="leave">Leave Conversation</button>
+    <h1>Messages</h1>
+    <div id="messages"></div>
+    <textarea id="message"></textarea>
+    <button id="send">Send</button>
+</section>
+
+<script src="./node_modules/nexmo-conversation/dist/conversationClient.js"></script>
+<script>
+    var USER_JWT =
+        'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MDAzODUxMDgsImp0aSI6IjYxZDY5MmUwLTZiYmUtMTFlNy04ZGE2LWYzMmRiZDlkODVjYyIsInN1YiI6ImphbWllIiwiZXhwIjoiMTUwMDQ3MTUwOCIsImFjbCI6eyJwYXRocyI6eyIvdjEvc2Vzc2lvbnMvKioiOnt9LCIvdjEvdXNlcnMvKioiOnt9LCIvdjEvY29udmVyc2F0aW9ucy8qKiI6e319fSwiYXBwbGljYXRpb25faWQiOiIyYzE4NmQ0NS04MGFmLTRiNGItOGI0Ny1hZDc0N2ZmZjAwOTUifQ.hrlUZ81HMdnkutyeHKXSD1tVWqSg_ZaHWDnWPVngiWsQEl4u0C8Cp2sbBQMt8Z3rMHyYfM15vahZrEHwX1TBpHqmC16RKXpiLWp7rC_cmSPc9d7kEE0M5JHQMl3b0Xig1CcQMxg-GCxnXrqjRbyJO07hvlqCD3s2ASonWCa-dDelfSujqErYDfv3Mkpgs6vg2_JS5Rf4rMOLtrIapdyRucocnSdq_K9t6-ZHumU5-jsdyDJ_qdmrsQcmBGOsWokmfEXWjTklbqBBy3BagGewYCl8MmmpCxe19CuBLz0FA5dUqPQNwL73fRiviRs27doQJsrKM39izDyQgjOP0ukiSw';
+
+    var CONVERSATION_ID = 'CON-003b9d94-ee5d-4260-8b44-c94fc6f2be04';
+
+    var conversation = null;
+
+    var SECOND_USER_JWT =
+        'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MDAzODUxMzMsImp0aSI6IjcwNTBjN2YwLTZiYmUtMTFlNy1hYmE3LWRkYWU0ZjI1MThhNiIsInN1YiI6ImFsaWNlIiwiZXhwIjoiMTUwMDQ3MTUzMiIsImFjbCI6eyJwYXRocyI6eyIvdjEvc2Vzc2lvbnMvKioiOnt9LCIvdjEvdXNlcnMvKioiOnt9LCIvdjEvY29udmVyc2F0aW9ucy8qKiI6e319fSwiYXBwbGljYXRpb25faWQiOiIyYzE4NmQ0NS04MGFmLTRiNGItOGI0Ny1hZDc0N2ZmZjAwOTUifQ.WWVtD1tB09dZYK0IcexXGQgNxiqPW0X5Vjj70AKIVntEItlocpXY5VUuTpIViQcV8-4k0nPASi6461TeVkd4SoOmk9XDjieuFbXqRH3MwtuEr3FWR58EtRjMtZ2F-pPciaHt7PY7mwvuyDmCX1qvxxlzB1pdShNxbicS7I5e3teWbOt7lRQpDAxMorzTdeR-RGvyZnjkd8SydsBFcLfnavL56_9x0HgeVN3i6Kz-FPj2xSWlQA7Xaam0Cc-hfXv4SJdMJnbtUUsEQMRhQFgh9X0iyfhqSbKVSZSiXeA4TiSWz3healZ43bnBwTLFTE0ZckYPt-WnmUEJKnGjcmg5vA';
+    var conversationList = null;
+
+    var application = null;
+
+    function authenticate(username) {
+        return username.toLowerCase() === "jamie" ? USER_JWT : SECOND_USER_JWT;
+    }
+
+    function login(userToken) {
+
+        var rtc = new ConversationClient({
+            debug: false
+        });
+
+        rtc.login(userToken).then(function(app) {
+            console.log('*** Logged into app', app);
+
+            application = app;
+
+            app.on("member:invited",
+                function(data, invitation) {
+                    //identify the sender.
+                    console.log("*** Invitation received from: " + invitation.body.invited_by);
+
+                    //accept an invitation.
+                    app.getConversation(invitation.cid || invitation.body.cname)
+                        .then(function(conversation_to_join) {
+                            conversation_to_join.join(app.me, invitation.body.user.member_id);
+                            var username = document.getElementById('username').value;
+                            var userToken = authenticate(username);
+                            login(userToken);
+                        });
+                });
+
+            // Get a list of conversations within the application
+            return app.getConversations();
+        }).then(function(conversations) {
+            console.log('*** Retrieved conversations', conversations);
+            conversationList = conversations
+
+            var conversationsElement = document.createElement("ul");
+            for (var id in conversations) {
+                var conversationElement = document.createElement("li");
+                conversationElement.textContent = conversations[id].display_name;
+                conversationElement.addEventListener("click", selectConversation.bind(id));
+                conversationsElement.appendChild(conversationElement);
+            }
+
+            if (!conversationsElement.childNodes.length) {
+                conversationsElement.textContent = "You are not a member of any conversation"
+            }
+
+            document.getElementsByClassName('conversations')[0].appendChild(conversationsElement)
+        }).catch(function(error) {
+            console.error(error);
+        });
+
+    }
+
+    document.getElementById('login')
+        .addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var username = document.getElementById('username').value;
+            var userToken = authenticate(username);
+            if (userToken) {
+                document.getElementsByClassName('conversations')[0].style.display = 'block';
+                document.getElementsByClassName('login')[0].style.display = 'none';
+                login(userToken);
+            } else {
+                alert(`unknown user "${username}"`);
+            }
+        }, false);
+
+    function selectConversation() {
+        conversation = conversationList[this];
+
+        application.getConversation(this, true).then(function(conv) {
+            conv.getEvents().then(function(events) {
+                var eventsHistory = "";
+                for (var i = Object.keys(events).length; i > 0; i--) {
+
+                    eventsHistory += conversation.members[events[Object.keys(events)[i - 1]].from].name + ": " + events[Object.keys(events)[i - 1]].body.text + "\n"
+                }
+
+                var messageEl = document.getElementById('messages');
+                var messageText = messageEl.innerText;
+                messageEl.innerText = eventsHistory + messageText;
+            })
+        })
+
+        document.getElementsByClassName('conversations')[0].style.display = 'none';
+        document.getElementsByClassName('messages')[0].style.display = 'block';
+
+        console.log('*** Conversation Member', conversation.me);
+
+        // Bind to events on the conversation
+        conversation.on('text', function(sender, message) {
+            console.log('*** Message received', sender, message);
+            var messagesEl = document.getElementById('messages');
+            var text = sender.name + ': ' + message.text + '\n' +
+                messagesEl.innerText;
+            messagesEl.innerText = text;
+            if (sender.name !== conversation.me.name) {
+                message.seen().then(function() {
+                    console.log('text:seen event was sent');
+                }).catch(function(error) {
+                    console.log('error sending text:seen event', error);
+                });
+            }
+        });
+
+        conversation.on("text:seen",
+            function(data, text) {
+                console.log('seen: ', text);
+
+            });
+        conversation.on("text:typing:off",
+            function(data) {
+                console.log(data.name + " stopped typing...");
+            });
+        conversation.on("text:typing:on",
+            function(data) {
+                console.log(data.name + " started typing...");
+            });
+
+
+        conversation.on("member:joined",
+            function(data, info) {
+                console.log("*** " + info.user.name + " joined the conversation");
+                var messagesEl = document.getElementById('messages');
+                var text = info.user.name + ' joined the conversation\n' +
+                    messagesEl.innerText;
+                messagesEl.innerText = text;
+            });
+        conversation.on("member:left",
+            function(data, info) {
+                console.log(info.user.name + " left the conversation");
+                var messagesEl = document.getElementById('messages');
+                var text = info.user.name + ' left the conversation\n' +
+                    messagesEl.innerText;
+                messagesEl.innerText = text;
+            });
+    }
+
+    document.getElementById('send')
+        .addEventListener('click', function() {
+            var message = document.getElementById('message');
+            conversation.sendText(message.value);
+            message.value = '';
+        }, false);
+
+    document.getElementById('messages')
+        .addEventListener('focus', function() {
+            conversation.startTyping().then(function() {
+                console.log('text:typing:off event was sent');
+            }).catch(function(error) {
+                console.log('error sending text:typing:off event', error);
+            });
+        }, false);
+    document.getElementById('messages')
+        .addEventListener('blur', function() {
+            conversation.stopTyping().then(function() {
+                console.log('text:typing:off event was sent');
+            }).catch(function(error) {
+                console.log('error sending text:typing:off event', error);
+            });
+        }, false);
+
+    document.getElementById('leave')
+        .addEventListener('click', function() {
+            conversation.leave().then(function() {
+                console.log('Left conversation');
+            }).catch(function(error) {
+                console.log('Could not leave conversation', error);
+            });
+        }, false);
+</script>
