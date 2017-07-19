@@ -39,6 +39,7 @@
 </section>
 
 <section class="messages">
+    <button id="leave">Leave Conversation</button>
     <h1>Messages</h1>
     <div id="messages"></div>
     <textarea id="message"></textarea>
@@ -191,6 +192,14 @@
                     messagesEl.innerText;
                 messagesEl.innerText = text;
             });
+        conversation.on("member:left",
+            function(data, info) {
+                console.log(info.user.name + " left the conversation");
+                var messagesEl = document.getElementById('messages');
+                var text = info.user.name + ' left the conversation\n' +
+                    messagesEl.innerText;
+                messagesEl.innerText = text;
+            });
     }
 
     document.getElementById('send')
@@ -214,6 +223,15 @@
                 console.log('text:typing:off event was sent');
             }).catch(function(error) {
                 console.log('error sending text:typing:off event', error);
+            });
+        }, false);
+
+    document.getElementById('leave')
+        .addEventListener('click', function() {
+            conversation.leave().then(function() {
+                console.log('Left conversation');
+            }).catch(function(error) {
+                console.log('Could not leave conversation', error);
             });
         }, false);
 </script>
