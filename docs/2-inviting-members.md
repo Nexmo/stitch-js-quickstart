@@ -11,7 +11,7 @@ This guide will introduce you to the following concepts.
 * **Conversation Events** - `member:joined` and `text` events that fire on an Conversation, after you are a Member
 
 
-## Before you being
+## Before you begin
 
 * Ensure you have run through the [previous guide](1-simple-conversation.md)
 
