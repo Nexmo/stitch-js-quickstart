@@ -82,7 +82,7 @@ Update `index.html` with a placeholder section to list conversations.
 
 ```
 
-### 2.2 - Update the stubbed Out Login
+### 2.2 - Update the stubbed out Login
 
 Now, let's update the login workflow to accommodate a second user.
 
