@@ -99,7 +99,7 @@ var conversationList = null;
 </script>
 ```
 
-Update the `authenicate` function. We'll  return the `USER_JWT` value if the `username` is `'jamie'` or `SECOND_USER_JWT` for any other `username`.
+Update the `authenticate` function. We'll  return the `USER_JWT` value if the `username` is `'jamie'` or `SECOND_USER_JWT` for any other `username`.
 
 ```html
 <script>
