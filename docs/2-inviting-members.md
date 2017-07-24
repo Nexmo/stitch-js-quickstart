@@ -185,7 +185,7 @@ With the following that takes the list of conversations and saves it in the `con
         }
 
         if (!conversationsElement.childNodes.length) {
-            conversationsElement.textContent = "You are not a member of any conversation"
+            conversationsElement.textContent = "You are not a member of any conversations"
         }
 
         document.getElementsByClassName('conversations')[0].appendChild(conversationsElement)
