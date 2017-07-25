@@ -8,10 +8,10 @@ This guide will introduce you to the following concepts.
 
 * **Invites** - you can invite users to a conversation
 * **Application Events** - `member:invited` events that fire on an Application, before you are a Member of a Conversation
-* **Conversation Events** - `member:joined` and `text` events that fire on an Conversation, after you are a Member
+* **Conversation Events** - `member:joined` and `text` events that fire on a Conversation, after you are a Member
 
 
-## Before you being
+## Before you begin
 
 * Ensure you have run through the [previous guide](1-simple-conversation.md)
 
@@ -82,7 +82,7 @@ Update `index.html` with a placeholder section to list conversations.
 
 ```
 
-### 2.2 - Update the stubbed Out Login
+### 2.2 - Update the stubbed out Login
 
 Now, let's update the login workflow to accommodate a second user.
 
@@ -99,7 +99,7 @@ var conversationList = null;
 </script>
 ```
 
-Update the `authenicate` function. We'll  return the `USER_JWT` value if the `username` is `'jamie'` or `SECOND_USER_JWT` for any other `username`.
+Update the `authenticate` function. We'll  return the `USER_JWT` value if the `username` is `'jamie'` or `SECOND_USER_JWT` for any other `username`.
 
 ```html
 <script>
@@ -185,7 +185,7 @@ With the following that takes the list of conversations and saves it in the `con
         }
 
         if (!conversationsElement.childNodes.length) {
-            conversationsElement.textContent = "You are not a member of any conversation"
+            conversationsElement.textContent = "You are not a member of any conversations"
         }
 
         document.getElementsByClassName('conversations')[0].appendChild(conversationsElement)
