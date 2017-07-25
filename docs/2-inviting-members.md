@@ -231,7 +231,7 @@ function selectConversation() {
 
 ### 2.5 - Listening for Conversation invites and accepting them
 
-The next step is to update the `login` method to listen on the `application` object for the `member:invited` event. Once we receive an invite, we're going to automatically join the user to that Conversation.
+The next step is to update the `login` method to listen on the `application` object for the `member:invited` event. Once we receive an invite, we're going to automatically join the user to that Conversation, and re-login the user in order to update the UI.
 
 ```js
     ...
