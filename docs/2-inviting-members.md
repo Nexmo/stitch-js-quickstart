@@ -260,10 +260,11 @@ The next step is to update the `login` method to listen on the `application` obj
 
 }
 ```
+### 2.6 - Open the conversation in two browser windows
 
 Now run `index.html` in two side-by-side browser windows, making sure to login with the user name `jamie` in one and with `alice` in the other. Focus the browser window where you're logged in with `alice`.
 
-### 2.6 - Invite the second user to the conversations
+### 2.7 - Invite the second user to the conversations
 
 Finally, let's invite the user to the conversation that we created. In your terminal, run the following command and remember to replace `CONVERSATION_ID` in the URL with the ID of the Conversation you created in the first guide and the `USER_ID` with the one you got when creating the User for `alice`.
 
