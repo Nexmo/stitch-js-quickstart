@@ -37,7 +37,7 @@ _Note: The steps within this section can all be done dynamically via server-side
 Create a Nexmo application within the Nexmo platform to use within this guide.
 
 ```bash
-$ nexmo app:create "My Convo App" https://example.com.com/answer https://example.com/event --type=rtc --keyfile=private.key
+$ nexmo app:create "My Conversation App" https://example.com/answer https://example.com/event --type=rtc --keyfile=private.key
 ```
 
 The output of the above command will be something like this:
