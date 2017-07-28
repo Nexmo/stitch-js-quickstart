@@ -43,7 +43,7 @@ $ nexmo app:create "My Conversation App" https://example.com/answer https://exam
 The output of the above command will be something like this:
 
 ```bash
-Application created: 2c59f277-5a88-4fab-88c4-919ee28xxxxx
+Application created: aaaaaaaa-bbbb-cccc-dddd-0123456789ab
 Private Key saved to: private.key
 ```
 
@@ -71,7 +71,7 @@ $ curl -X POST https://api.nexmo.com/beta/conversations\
 This will result in a JSON response that looks something like the following. Take a note of the `id` attribute as this is the unique identifier for the conversation that has been created. We'll refer to this as `CONVERSATION_ID` later.
 
 ```json
-{"id":"CON-8cda4c2d-9a7d-42ff-b695-ec4124dfcc38","href":"http://conversation.local/v1/conversations/CON-8cda4c2d-9a7d-42ff-b695-ec4124dfcc38"}
+{"id":"CON-aaaaaaaa-bbbb-cccc-dddd-0123456789ab","href":"http://conversation.local/v1/conversations/CON-aaaaaaaa-bbbb-cccc-dddd-0123456789ab"}
 ```
 
 ### 1.4 - Create a User
@@ -88,7 +88,7 @@ $ curl -X POST https://api.nexmo.com/beta/users\
 The output will look as follows:
 
 ```json
-{"id":"USR-9a88ad39-31e0-4881-b3ba-3b253e457603","href":"http://conversation.local/v1/users/USR-9a88ad39-31e0-4881-b3ba-3b253e457603"}
+{"id":"USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab","href":"http://conversation.local/v1/users/USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab"}
 ```
 
 Take a note of the `id` attribute as this is the unique identifier for the user that has been created. We'll refer to this as `USER_ID` later.
@@ -105,7 +105,7 @@ $ curl -X POST https://api.nexmo.com/beta/conversations/CONVERSATION_ID/members\
 The response to this request will confirm that the user has `JOINED` the "Nexmo Chat" conversation.
 
 ```json
-{"id":"MEM-fe168bd2-de89-4056-ae9c-ca3d19f9184d","user_id":"USR-f4a27041-744d-46e0-a75d-186ad6cfcfae","state":"JOINED","timestamp":{"joined":"2017-06-17T22:23:41.072Z"},"channel":{"type":"app"},"href":"http://conversation.local/v1/conversations/CON-8cda4c2d-9a7d-42ff-b695-ec4124dfcc38/members/MEM-fe168bd2-de89-4056-ae9c-ca3d19f9184d"}
+{"id":"MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab","user_id":"USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab","state":"JOINED","timestamp":{"joined":"2017-06-17T22:23:41.072Z"},"channel":{"type":"app"},"href":"http://conversation.local/v1/conversations/CON-aaaaaaaa-bbbb-cccc-dddd-0123456789ab/members/MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab"}
 ```
 
 You can also check this by running the following request, replacing `CONVERSATION_ID`:
@@ -118,7 +118,7 @@ $ curl https://api.nexmo.com/beta/conversations/CONVERSATION_ID/members\
 Where you should see a response similar to the following:
 
 ```json
-[{"user_id":"USR-f4a27041-744d-46e0-a75d-186ad6cfcfae","name":"MEM-fe168bd2-de89-4056-ae9c-ca3d19f9184d","user_name":"jamie","state":"JOINED"}]
+[{"user_id":"USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab","name":"MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab","user_name":"jamie","state":"JOINED"}]
 ```
 
 ### 1.6 - Generate a User JWT
