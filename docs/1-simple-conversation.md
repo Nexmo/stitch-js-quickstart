@@ -57,7 +57,7 @@ Generate a JWT using your Application ID (`YOUR_APP_ID`).
 $ APP_JWT="$(nexmo jwt:generate ./private.key application_id=YOUR_APP_ID exp=$(($(date +%s)+86400)))"
 ```
 
-*Note: The above command saves the generated JWT to a `APP_JWT` constant. It also sets the expiry of the JWT (`exp`) to one day from now.*
+*Note: The above command saves the generated JWT to a `APP_JWT` variable. It also sets the expiry of the JWT (`exp`) to one day from now.*
 
 ### 1.3 - Create a Conversation
 
@@ -170,6 +170,7 @@ The UI contains:
 
   <form id="login">
     <h1>Login</h1>
+    <input type="text" name="username" value="">
     <input type="submit" value="Login" />
   </form>
 
@@ -211,7 +212,7 @@ Next, let's stub out the login workflow.
 
 Define a constant with a value of the User JWT that was created earlier and set the value to the `USER_JWT` that was generated earlier. Create a `CONVERSATION_ID` with the value of the Conversation ID that was created earlier to indicate the conversation we're going to be using.
 
-Lastly we'll create a class called `ChatApp` that creates some instance variables selecting our HTML elements for use later and stub out the functions we'll be creating.
+Lastly we'll create a class called `ChatApp` that creates some instance variables selecting our HTML elements for use later, an error logging method, an event logging method and stub out the functions we'll be creating later.
 
 ```html
 <script>
@@ -227,6 +228,16 @@ class ChatApp {
     this.setupUserEvents()
   }
 
+  errorLogger(error) {
+      console.log(error)
+  }
+
+  eventLogger(event) {
+      return () => {
+          console.log("'%s' event was sent", event)
+      }
+  }
+
   authenticate() { // TODO }
 
   setupConversationEvents(conversation) { // TODO }
@@ -240,7 +251,7 @@ new ChatApp
 </script>
 ```
 
-Lets fill in the `authenticate` function. For now, stub it out to always return the `USER_JWT` value. This is where you would normally use the users session to authenticate the user and return their JWT.
+Let's fill in the `authenticate` function. For now, stub it out to always return the `USER_JWT` value. This is where you would normally use the users session to authenticate the user and return their JWT.
 
 ```html
 authenticate() {
@@ -273,9 +284,8 @@ Within the `joinConversation` function, create an instance of the `ConversationC
 joinConversation(userToken) {
   new ConversationClient({ debug: false })
     .login(userToken)
-    .catch(function (error) {
-      console.error(error)
-    })
+    .then(app => console.log('*** Logged into app', app))
+    .catch(this.errorLogger)
 }
 ```
 
@@ -287,20 +297,22 @@ The next step is to have a user to retrieve the Conversation that was created. T
 joinConversation(userToken) {
   new ConversationClient({ debug: false })
     .login(userToken)
-    .then(app => app.getConversation(CONVERSATION_ID))
-    .catch(function (error) {
-      console.error(error)
+    .then(app => {
+        console.log('*** Logged into app', app)
+        return app.getConversation(CONVERSATION_ID)
     })
+    .catch(this.errorLogger)
 }
 ```
 
 ### 2.6 - Receiving and Sending `text` Events
 
-Once we have found the conversation lets pass it to `setupConversationEvents`. We then want to listen for `text` event on the `conversation` and show them in the UI.
+Once we have found the conversation let's pass it to `setupConversationEvents`. We then want to listen for `text` event on the `conversation` and show them in the UI.
 
 ```js
 setupConversationEvents(conversation) {
   this.conversation = conversation
+  console.log('*** Conversation Retrieved', conversation)
   console.log('*** Conversation Member', conversation.me)
 
   // Bind to events on the conversation
@@ -315,11 +327,12 @@ setupConversationEvents(conversation) {
 joinConversation(userToken) {
   new ConversationClient({ debug: false })
     .login(userToken)
-    .then(app => app.getConversation(CONVERSATION_ID))
-    .then(this.setupConversationEvents.bind(this))
-    .catch(function (error) {
-      console.error(error)
+    .then(app => {
+        console.log('*** Logged into app', app)
+        return app.getConversation(CONVERSATION_ID)
     })
+    .then(this.setupConversationEvents.bind(this))
+    .catch(this.errorLogger)
 }
 ```
 
@@ -328,8 +341,10 @@ Finally, we'll add another event listener in the `setupUserEvents` function. Whe
 ```js
 setupUserEvents() {
   this.sendButton.addEventListener('click', () => {
-    this.conversation.sendText(this.messageTextarea.value)
-    this.messageTextarea.value = ''
+    this.conversation.sendText(this.messageTextarea.value).then(() => {
+        this.eventLogger('text')()
+        this.messageTextarea.value = ''
+    }).catch(this.errorLogger)
   })
 
   this.loginForm.addEventListener('submit', (event) => {
@@ -344,105 +359,7 @@ setupUserEvents() {
 }
 ```
 
-Thats's it! Your page should now look something like this:
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <style>
-    #login, #messages {
-      width: 80%;
-      height: 300px;
-    }
-
-    #messages {
-      display: none;
-    }
-  </style>
-  <script src="./node_modules/nexmo-conversation/dist/conversationClient.js"></script>
-</head>
-<body>
-
-  <form id="login">
-    <h1>Login</h1>
-    <input type="submit" value="Login" />
-  </form>
-
-  <section id="messages">
-    <h1>Messages</h1>
-
-    <div id="messageFeed"></div>
-
-    <textarea id="messageTextarea"></textarea>
-    <br>
-    <button id="send">Send</button>
-  </section>
-
-  <script>
-    const USER_JWT = 'YOUR USER JWT';
-    const CONVERSATION_ID = 'YOUR CONVERSATION ID';
-
-    class ChatApp {
-      constructor() {
-        this.messageTextarea = document.getElementById('messageTextarea')
-        this.messageFeed = document.getElementById('messageFeed')
-        this.sendButton = document.getElementById('send')
-        this.loginForm = document.getElementById('login')
-        this.setupUserEvents()
-      }
-
-      authenticate() {
-        // Your authentication logic would go here.
-        return USER_JWT
-      }
-
-      setupConversationEvents(conversation) {
-        this.conversation = conversation
-        console.log('*** Conversation Member', conversation.me)
-
-        // Bind to events on the conversation
-        conversation.on('text', (sender, message) => {
-          console.log('*** Message received', sender, message)
-          const date = new Date(Date.parse(message.timestamp))
-          const text = `${sender.name} @ ${date}: <b>${message.text}</b><br>`
-          this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
-        })
-      }
-
-      joinConversation(userToken) {
-        new ConversationClient({ debug: false })
-          .login(userToken)
-          .then(app => app.getConversation(CONVERSATION_ID))
-          .then(this.setupConversationEvents.bind(this))
-          .catch(function (error) {
-            console.error(error)
-          })
-      }
-
-      setupUserEvents() {
-        this.sendButton.addEventListener('click', () => {
-          this.conversation.sendText(this.messageTextarea.value)
-          this.messageTextarea.value = ''
-        })
-
-        this.loginForm.addEventListener('submit', (event) => {
-          event.preventDefault()
-          const userToken = this.authenticate()
-          if (userToken) {
-            document.getElementById('messages').style.display = 'block'
-            document.getElementById('login').style.display = 'none'
-            this.joinConversation(userToken)
-          }
-        })
-      }
-    }
-
-    new ChatApp()
-  </script>
-</body>
-</html>
-```
+Thats's it! Your page should now look something like [this](../examples/1-simple-conversation/index.html).
 
 Run `index.html` in two side-by-side browser windows to see the conversation take place.
 

@@ -6,15 +6,13 @@ In this getting started guide we'll cover creating a second user and inviting th
 
 This guide will introduce you to the following concepts.
 
-* **Invites** - you can invite users to a conversation
-* **Application Events** - `member:invited` events that fire on an Application, before you are a Member of a Conversation
-* **Conversation Events** - `member:joined` and `text` events that fire on a Conversation, after you are a Member
-
+- **Invites** - you can invite users to a conversation
+- **Application Events** - `member:invited` events that fire on an Application, before you are a Member of a Conversation
+- **Conversation Events** - `member:joined` and `text` events that fire on a Conversation, after you are a Member
 
 ## Before you begin
 
-* Ensure you have run through the [previous guide](1-simple-conversation.md)
-
+- Ensure you have run through the [previous guide](1-simple-conversation.md)
 
 ## 1 - Setup
 
@@ -40,7 +38,7 @@ $ curl -X POST https://api.nexmo.com/beta/users\
 The output will look as follows:
 
 ```json
-{"id":"USR-9a88ad39-31e0-4881-b3ba-3b253e457603","href":"http://conversation.local/v1/users/USR-9a88ad39-31e0-4881-b3ba-3b253e457603"}
+{"id":"USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab","href":"http://conversation.local/v1/users/USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab"}
 ```
 
 Take a note of the `id` attribute as this is the unique identifier for the user that has been created. We'll refer to this as `USER_ID` later.
@@ -53,7 +51,7 @@ Generate a JWT for the user. The JWT will be stored to the `SECOND_USER_JWT` var
 $ SECOND_USER_JWT="$(nexmo jwt:generate ./private.key sub=alice exp=$(($(date +%s)+86400)) acl='{"paths": {"/v1/sessions/**": {}, "/v1/users/**": {}, "/v1/conversations/**": {}}}' application_id=YOUR_APP_ID)"
 ```
 
-*Note: The above command sets the expiry of the JWT to one day from now.*
+_Note: The above command sets the expiry of the JWT to one day from now._
 
 You can see the JWT for the user by running the following:
 
@@ -69,43 +67,46 @@ We will use the application we already created for [the first getting started gu
 
 Update `index.html` with a placeholder section to list conversations.
 
-
 ```html
-  <style>
-    .conversations {
+<style>
+    #conversations {
         display: none;
     }
   </style>
-  <section class="conversations">
+  <section id="conversations">
       <h1>Conversations</h1>
   </section>
+```
 
+We'll also update the constructor method with a reference to the `conversations` element.
+
+```javascript
+constructor() {
+    ...
+    this.conversationList = document.getElementById('conversations')
+}
 ```
 
 ### 2.2 - Update the stubbed out Login
 
 Now, let's update the login workflow to accommodate a second user.
 
-Define a variable with a value of the second User JWT that was created earlier and set the value to the `SECOND_USER_JWT` that was generated earlier. Also, create a variable called `conversationList` that will eventually reference the conversations object.
+Define a constant with a value of the second User JWT that was created earlier and set the value to the `SECOND_USER_JWT` that was generated earlier.
 
 ```html
 <script>
 ...
-var conversation = null;
+const SECOND_USER_JWT = 'SECOND USER JWT';
 
-var SECOND_USER_JWT = 'SECOND USER JWT';
-
-var conversationList = null;
 </script>
 ```
 
-Update the `authenticate` function. We'll  return the `USER_JWT` value if the `username` is `'jamie'` or `SECOND_USER_JWT` for any other `username`.
+Update the `authenticate` function. We'll return the `USER_JWT` value if the `username` is `'jamie'` or `SECOND_USER_JWT` for any other `username`.
 
 ```html
 <script>
-var conversationList = null;
 
-function authenticate(username) {
+authenticate(username) {
   return username.toLowerCase() === "jamie" ? USER_JWT : SECOND_USER_JWT;
 }
 </script>
@@ -113,153 +114,117 @@ function authenticate(username) {
 
 Next, update the login form handler to show the conversation elements instead of the message elements when the form is submitted.
 
-```js
-
-document.getElementById('login')
-    .addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        var username = document.getElementById('username').value;
-        var userToken = authenticate(username);
-        if(userToken) {
-            document.getElementsByClassName('conversations')[0].style.display = 'block';
-            document.getElementsByClassName('login')[0].style.display = 'none';
-            login(userToken);
-        }
-        else {
-            alert('unknown user ' + username);
-        }
-    }, false);
+```javascript
+this.loginForm.addEventListener('submit', (event) => {
+    event.preventDefault()
+    const userToken = this.authenticate(this.loginForm.children.username.value)
+    if (userToken) {
+        this.listConversations(userToken)
+    }
+})
 ```
 
 ### 2.3 - Update the JS needed to list the Conversations
 
-In the previous quick start guide we retrieved the conversation from the list of existing conversations that the user is a member of using a hard-coded `CONVERSATION_ID`. This time we're going to list the conversations that the user is a member, allowing the user to select the conversation they want to join. We're going to replace the following part in the code:
+In the previous quick start guide we retrieved the conversation directly using a hard-coded `CONVERSATION_ID`. This time we're going to list the conversations that the user is a member, allowing the user to select the conversation they want to join. We're going to delete the `joinConversation` method and create the `listConversations` method:
 
-```js
-  }).then(function(conversations) {
-      console.log('*** Retrieved conversations', conversations);
-
-      if (conversations[CONVERSATION_ID] !== undefined) {
-          console.log('*** Conversation found', conversations[CONVERSATION_ID].name, CONVERSATION_ID);
-
-          // Resolve the conversation
-          return conversations[CONVERSATION_ID];
-      }
-      else {
-          throw new Error('*** Could not find expected conversation', CONVERSATION_ID);
-      }
-    }).then(function(conv) {
-        conversation = conv;
-
-        console.log('*** Conversation Member', conversation.me);
-
-        // Bind to events on the conversation
-        conversation.on('text', function(sender, message) {
-            console.log('*** Message received', sender, message);
-            var messagesEl = document.getElementById('messages');
-            var text = sender.name + ': ' + message.text + '\n' +
-                messagesEl.innerText;
-            messagesEl.innerText = text;
-        });
-    }).catch(function(error) {
-        console.error(error);
-    });
-
-}
-```
-
-With the following that takes the list of conversations and saves it in the `conversationList` variable we created earlier. It then proceeds in creating the HTML wrapper element for the conversations. The code then cycles through the conversations, creating HTML elements for each of them, binding a click event listener, `selectConversation` to each of them, and then adds the element to the wrapper element. Finally, the code checks if there were any conversations added, and if not lists a message and then appends the wrapper element to the UI.
-
-```js
-    }).then(function(conversations) {
+```javascript
+listConversations(userToken) {
+  new ConversationClient({
+          debug: false
+      })
+      .login(userToken)
+      .then(app => {
+          console.log('*** Logged into app', app)
+          return app.getConversations()
+      })
+      .then(conversations => {
         console.log('*** Retrieved conversations', conversations);
-        conversationList = conversations
 
-        var conversationsElement = document.createElement("ul");
-        for (var id in conversations) {
-            var conversationElement = document.createElement("li");
-            conversationElement.textContent = conversations[id].display_name;
-            conversationElement.addEventListener("click", selectConversation.bind(id));
-            conversationsElement.appendChild(conversationElement);
-        }
-
-        if (!conversationsElement.childNodes.length) {
-            conversationsElement.textContent = "You are not a member of any conversations"
-        }
-
-        document.getElementsByClassName('conversations')[0].appendChild(conversationsElement)
-    }).catch(function(error) {
-        console.error(error);
-    });
-
+        this.updateConversationsList(conversations)
+      })
+      .catch(this.errorLogger)
 }
 ```
 
-### 2.4 - Implement the handler for `selectConversation`
+We're going to create the `updateConversationsList` method. It will create the HTML wrapper element for the conversations. The code cycles through the conversations, creating HTML elements for each of them, binding a click event listener to each of them, and then adds the element to the wrapper element. The code checks if there were any conversations added, and if not lists a message and then appends the wrapper element to the UI. Finally, it shows the conversations list and hides the login form.
 
-Create a new method `selectConversation` which will handle the user clicking on a Conversation name. When the user selects a Conversation, ensure the `conversation` variable is updated to correctly reference that conversation object and we're going to hide the Conversations list and display the Messages box.  We then want to listen for `text` event on the `conversation` and show them in the UI. We'll also listen for the `member:joined` event on the `conversation` and then show a message in the UI about a member joining the conversation.
+```javascript
+updateConversationsList(conversations) {
+  let conversationsElement = document.createElement("ul");
+  for (let id in conversations) {
+      let conversationElement = document.createElement("li");
+      conversationElement.textContent = conversations[id].display_name;
+      conversationElement.addEventListener("click", () => this.setupConversationEvents(conversations[id]));
+      conversationsElement.appendChild(conversationElement);
+  }
 
-```js
-function selectConversation() {
-    conversation = conversationList[this];
+  if (!conversationsElement.childNodes.length) {
+      conversationsElement.textContent = "You are not a member of any conversations"
+  }
 
-    document.getElementsByClassName('conversations')[0].style.display = 'none';
-    document.getElementsByClassName('messages')[0].style.display = 'block';
-
-    console.log('*** Conversation Member', conversation.me);
-
-    // Bind to events on the conversation
-    conversation.on('text', function(sender, message) {
-        console.log('*** Message received', sender, message);
-        var messagesEl = document.getElementById('messages');
-        var text = sender.name + ': ' + message.text + '\n' +
-            messagesEl.innerText;
-        messagesEl.innerText = text;
-    });
-
-    conversation.on("member:joined",
-        function(data, info) {
-            console.log("*** " + info.user.name + " joined the conversation");
-            var messagesEl = document.getElementById('messages');
-            var text = info.user.name + ' joined the conversation\n' +
-                messagesEl.innerText;
-            messagesEl.innerText = text;
-        });
+  this.conversationList.appendChild(conversationsElement)
+  this.conversationList.style.display = 'block'
+  this.loginForm.style.display = 'none'
 }
 ```
 
-### 2.5 - Listening for Conversation invites and accepting them
+### 2.4 - Listening for Conversation invites and accepting them
 
-The next step is to update the `login` method to listen on the `application` object for the `member:invited` event. Once we receive an invite, we're going to automatically join the user to that Conversation, and re-login the user in order to update the UI.
+The next step is to add a listener on the `application` object for the `member:invited` event. Once we receive an invite, we're going to automatically join the user to that Conversation, and re-login the user in order to update the UI. We're going to update the `listConversations` method in order to do that.
 
-```js
-    ...
-    rtc.login(userToken).then(function(app) {
-        console.log('*** Logged into app', app);
+```javascript
+listConversations(userToken) {
 
-        app.on("member:invited",
-            function(data, invitation) {
+    new ConversationClient({
+            debug: false
+        })
+        .login(userToken)
+        .then(app => {
+            console.log('*** Logged into app', app)
+
+            app.on("member:invited", (data, invitation) => {
                 //identify the sender.
                 console.log("*** Invitation received:", invitation);
 
                 //accept an invitation.
                 app.getConversation(invitation.cid || invitation.body.cname)
-                    .then(function(conversation_to_join) {
-                        conversation_to_join.join(app.me, invitation.body.user.member_id);
-                        var username = document.getElementById('username').value;
-                        var userToken = authenticate(username);
-                        login(userToken);
-                    });
+                    .then(function(conversation) {
+                        conversation.join(app.me, invitation.body.user.member_id)
+                        var conversationDictionary = {}
+                        conversationDictionary[conversation.id] = conversation
+                        this.updateConversationsList(conversationDictionary)
+                    })
+                    .catch(this.errorLogger);
             });
+            return app.getConversations()
+        })
+        .then(conversations => {
+            console.log('*** Retrieved conversations', conversations);
 
-        // Get a list of conversations within the application
-        return app.getConversations();
-    }).then(function(conversations) {
-        ...
+            this.updateConversationsList(conversations)
 
+        })
+        .catch(this.errorLogger)
 }
 ```
+
+### 2.5 - Listening for members who joined a conversation
+
+We'll update the `setupConversationEvents` method to listen for the `member:joined` event on the conversation and then show a message in the UI about a member joining the conversation.
+
+```javascript
+setupConversationEvents(conversation) {
+  ...
+
+  conversation.on("member:joined", (data, info) => {
+    console.log(`*** ${info.user.name} joined the conversation`)
+    const text = `${info.user.name} @ ${date}: <b>joined the conversation</b><br>`
+    this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
+  })
+}
+```
+
 ### 2.6 - Open the conversation in two browser windows
 
 Now run `index.html` in two side-by-side browser windows, making sure to login with the user name `jamie` in one and with `alice` in the other. Focus the browser window where you're logged in with `alice`.
@@ -276,7 +241,7 @@ $ curl -X POST https://api.nexmo.com/beta/conversations/CONVERSATION_ID/members\
 The response to this request will confirm that the user has been `INVITED` the "Nexmo Chat" conversation.
 
 ```json
-{"id":"MEM-fe168bd2-de89-4056-ae9c-ca3d19f9184d","user_id":"USR-f4a27041-744d-46e0-a75d-186ad6cfcfae","state":"INVITED","timestamp":{"invited":"2017-06-17T22:23:41.072Z"},"channel":{"type":"app"},"href":"http://conversation.local/v1/conversations/CON-8cda4c2d-9a7d-42ff-b695-ec4124dfcc38/members/MEM-fe168bd2-de89-4056-ae9c-ca3d19f9184d"}
+{"id":"MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab","user_id":"USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab","state":"INVITED","timestamp":{"joined":"2017-06-17T22:23:41.072Z"},"channel":{"type":"app"},"href":"http://conversation.local/v1/conversations/CON-aaaaaaaa-bbbb-cccc-dddd-0123456789ab/members/MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab"}
 ```
 
 You can also check that `alice` was invited by running the following request, replacing `CONVERSATION_ID`:
@@ -289,11 +254,13 @@ $ curl https://api.nexmo.com/beta/conversations/CONVERSATION_ID/members\
 Where you should see a response similar to the following:
 
 ```json
-[{"user_id":"USR-f4a27041-744d-46e0-a75d-186ad6cfcfae","name":"MEM-fe168bd2-de89-4056-ae9c-ca3d19f9184d","user_name":"alice","state":"INVITED"}]
+[{"user_id":"USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab","name":"MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab","user_name":"alice","state":"INVITED"}]
 ```
 
 Return to the previously opened browser windows so you can see `alice` has a conversation listed now. You can click the conversation name and proceed to chat between `alice` and `jamie`.
 
+Thats's it! Your page should now look something like [this](../examples/2-inviting-members/index.html).
+
 ## Where next?
 
-* Have a look at the [Nexmo Conversation JS SDK API Reference](https://conversation-js-docs.herokuapp.com/)
+- Have a look at the [Nexmo Conversation JS SDK API Reference](https://conversation-js-docs.herokuapp.com/)
