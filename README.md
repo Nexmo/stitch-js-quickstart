@@ -40,14 +40,15 @@ If you want communicate with us during the EA program you can:
 ## Run through the quickstart guides
 
 * [Simple conversation](docs/1-simple-conversation.md)
+* [Inviting members](docs/2-inviting-members.md)
+* [Utilizing events](docs/3-utilizing-events.md)
 
-More coming soon.
 
 You can also find the completed examples in the [examples directory](examples).
 
 ## SDK API Reference docs
 
-The [Nexmo Conversation JavaScript SDK API Reference docs](https://conversation-js-docs.herokuapp.com/) are available online. If you do not have access to the docs, please contact [devrel@nexmo.com](mailto:devrel@nexmo.com)
+The [Nexmo Conversation JavaScript SDK API Reference docs](https://nexmo-developer-ea.herokuapp.com/sdk/conversation/js/) are available online. If you do not have access to the docs, please contact [devrel@nexmo.com](mailto:devrel@nexmo.com)
 
 ## Additional Resources
 
