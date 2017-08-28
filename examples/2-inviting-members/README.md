@@ -1,4 +1,4 @@
-# Nexmo JavaScript Conversation SDK Quickstart 1
+# Nexmo JavaScript Conversation SDK Quickstart 2
 
 ## Running the example
 

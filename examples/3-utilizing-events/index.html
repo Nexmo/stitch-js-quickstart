@@ -28,6 +28,7 @@
   </form>
 
   <section id="messages">
+    <button id="leave">Leave Conversation</button>
     <h1>Messages</h1>
 
     <div id="messageFeed"></div>
@@ -53,6 +54,7 @@
         this.sendButton = document.getElementById('send')
         this.loginForm = document.getElementById('login')
         this.conversationList = document.getElementById('conversations')
+        this.leaveButton = document.getElementById('leave')
         this.setupUserEvents()
       }
 
@@ -66,8 +68,28 @@
         }
       }
 
+      memberEventHandler(type) {
+        return (data, info) => {
+          console.log(`*** ${info.user.name} ${type} the conversation`)
+          const text = `${info.user.name} @ ${date}: <b>${type} the conversation</b><br>`
+          this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
+        }
+      }
+
       authenticate(username) {
         return username.toLowerCase() === "jamie" ? USER_JWT : SECOND_USER_JWT
+      }
+
+      showConversationHistory(conversation) {
+        conversation.getEvents().then((events) => {
+          var eventsHistory = ""
+          for (var i = Object.keys(events).length; i > 0; i--) {
+            const date = new Date(Date.parse(events[Object.keys(events)[i - 1]].timestamp))
+            eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
+          }
+
+          this.messageFeed.innerHTML = eventsHistory + this.messageFeed.innerHTML
+        })
       }
 
       setupConversationEvents(conversation) {
@@ -83,13 +105,20 @@
           const date = new Date(Date.parse(message.timestamp))
           const text = `${sender.name} @ ${date}: <b>${message.text}</b><br>`
           this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
+
+          if (sender.name !== this.conversation.me.name) {
+              message.seen().then(this.eventLogger('text:seen')).catch(this.errorLogger)
+          }
         })
 
-        conversation.on("member:joined", (data, info) => {
-          console.log(`*** ${info.user.name} joined the conversation`)
-          const text = `${info.user.name} @ ${date}: <b>joined the conversation</b><br>`
-          this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
-        })
+        conversation.on("member:joined", this.memberEventHandler('joined'))
+        conversation.on("member:left", this.memberEventHandler('left'))
+
+        this.showConversationHistory(conversation)
+
+        conversation.on("text:seen", (data, text) => console.log(`${data.name} saw text: ${text.body.text}`))
+        conversation.on("text:typing:off", data => console.log(`${data.name} stopped typing...`))
+        conversation.on("text:typing:on", data => console.log(`${data.name} started typing...`))
       }
 
       updateConversationsList(conversations) {
@@ -160,6 +189,17 @@
           if (userToken) {
             this.listConversations(userToken)
           }
+        })
+
+        this.messageTextarea.addEventListener('focus', () => {
+          this.conversation.startTyping().then(this.eventLogger('text:typing:on')).catch(this.errorLogger)
+        });
+        this.messageTextarea.addEventListener('blur', () => {
+          this.conversation.stopTyping().then(this.eventLogger('text:typing:off')).catch(this.errorLogger)
+        })
+
+        this.leaveButton.addEventListener('click', () => {
+          this.conversation.leave().then(this.eventLogger('member:left')).catch(this.errorLogger)
         })
       }
     }
