@@ -24,7 +24,7 @@ The first thing we're going to do is add history to the existing conversation. W
 
 ```javascript
 showConversationHistory(conversation) {
-  conversation.getEvents().then(events => {
+  conversation.getEvents().then((events) => {
     var eventsHistory = ""
     for (var i = Object.keys(events).length; i > 0; i--) {
       const date = new Date(Date.parse(events[Object.keys(events)[i - 1]].timestamp))

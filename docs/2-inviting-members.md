@@ -138,7 +138,7 @@ listConversations(userToken) {
           console.log('*** Logged into app', app)
           return app.getConversations()
       })
-      .then(conversations => {
+      .then((conversations) => {
         console.log('*** Retrieved conversations', conversations);
 
         this.updateConversationsList(conversations)
@@ -199,7 +199,7 @@ listConversations(userToken) {
             });
             return app.getConversations()
         })
-        .then(conversations => {
+        .then((conversations) => {
             console.log('*** Retrieved conversations', conversations);
 
             this.updateConversationsList(conversations)
