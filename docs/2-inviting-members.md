@@ -169,6 +169,18 @@ updateConversationsList(conversations) {
 }
 ```
 
+
+We need to also update `setupConversationEvents` in order to hide the `conversationList` and show the messages.
+
+```javascript
+setupConversationEvents(conversation) {
+  this.conversationList.style.display = 'none'
+  document.getElementById("messages").style.display = "block"
+  ...
+}
+```
+
+
 ### 2.4 - Listening for Conversation invites and accepting them
 
 The next step is to add a listener on the `application` object for the `member:invited` event. Once we receive an invite, we're going to automatically join the user to that Conversation, and re-login the user in order to update the UI. We're going to update the `listConversations` method in order to do that.
@@ -184,19 +196,21 @@ listConversations(userToken) {
             console.log('*** Logged into app', app)
 
             app.on("member:invited", (data, invitation) => {
-                //identify the sender.
-                console.log("*** Invitation received:", invitation);
+              //identify the sender.
+              console.log("*** Invitation received:", invitation);
 
-                //accept an invitation.
-                app.getConversation(invitation.cid || invitation.body.cname)
-                    .then(function(conversation) {
-                        conversation.join(app.me, invitation.body.user.member_id)
-                        var conversationDictionary = {}
-                        conversationDictionary[conversation.id] = conversation
-                        this.updateConversationsList(conversationDictionary)
-                    })
-                    .catch(this.errorLogger);
-            });
+              //accept an invitation.
+              app.getConversation(invitation.cid || invitation.body.cname)
+                .then((conversation) => {
+                  this.conversation = conversation
+                  conversation.join().then(() => {
+                    var conversationDictionary = {}
+                    conversationDictionary[this.conversation.id] = this.conversation
+                    this.updateConversationsList(conversationDictionary)
+                  }).catch(this.errorLogger)
+                })
+                .catch(this.errorLogger)
+            })
             return app.getConversations()
         })
         .then((conversations) => {

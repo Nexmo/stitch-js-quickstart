@@ -28,7 +28,9 @@ showConversationHistory(conversation) {
     var eventsHistory = ""
     for (var i = Object.keys(events).length; i > 0; i--) {
       const date = new Date(Date.parse(events[Object.keys(events)[i - 1]].timestamp))
-      eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
+      if (conversation.members[events[Object.keys(events)[i - 1]].from]) {
+        eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
+      }
     }
 
     this.messageFeed.innerHTML = eventsHistory + this.messageFeed.innerHTML

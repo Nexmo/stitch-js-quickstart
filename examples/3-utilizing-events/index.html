@@ -85,7 +85,9 @@
           var eventsHistory = ""
           for (var i = Object.keys(events).length; i > 0; i--) {
             const date = new Date(Date.parse(events[Object.keys(events)[i - 1]].timestamp))
-            eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
+            if (conversation.members[events[Object.keys(events)[i - 1]].from]) {
+              eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
+            }
           }
 
           this.messageFeed.innerHTML = eventsHistory + this.messageFeed.innerHTML
@@ -107,7 +109,7 @@
           this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
 
           if (sender.name !== this.conversation.me.name) {
-              message.seen().then(this.eventLogger('text:seen')).catch(this.errorLogger)
+            message.seen().then(this.eventLogger('text:seen')).catch(this.errorLogger)
           }
         })
 
@@ -151,15 +153,18 @@
 
             app.on("member:invited", (data, invitation) => {
               //identify the sender.
-              console.log("*** Invitation received:", invitation)
+              console.log("*** Invitation received:", invitation);
 
               //accept an invitation.
               app.getConversation(invitation.cid || invitation.body.cname)
-                .then(function(conversation) {
-                  conversation.join(app.me, invitation.body.user.member_id)
-                  var conversationDictionary = {}
-                  conversationDictionary[conversation.id] = conversation
-                  this.updateConversationsList(conversationDictionary)
+                .then((conversation) => {
+                  this.conversation = conversation
+                  conversation.join().then(() => {
+                    var conversationDictionary = {}
+                    conversationDictionary[this.conversation.id] = this.conversation
+                    this.updateConversationsList(conversationDictionary)
+                  }).catch(this.errorLogger)
+
                 })
                 .catch(this.errorLogger)
             })
