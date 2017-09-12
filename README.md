@@ -34,7 +34,7 @@ The Early Adopter (EA) program will take place for the next couple of months wit
 If your team members require access to the docs or SDK repos contact [devrel@nexmo.com](mailto:devrel@nexmo.com).
 * Ask questions, provide feedback and report problems by [creating an issue](https://github.com/Nexmo/conversation-js-quickstart/issues/new)
 If you want communicate with us during the EA program you can:
-* Join the [Nexmo community slack](http://nexmo-community-invite.herokuapp.com/) and ask @chris, @laka or @leggetter for access to the private [#conversation-ea](https://nexmo-community.slack.com/messages/G5V788WHJ/) channel
+* Join the [Nexmo community slack](https://developer.nexmo.com/community/slack) and ask @chris, @laka or @leggetter for access to the private [#conversation-ea](https://nexmo-community.slack.com/messages/G5V788WHJ/) channel
 * Email [devrel@nexmo.com](mailto:devrel@nexmo.com) directly
 
 ## Run through the quickstart guides
@@ -48,12 +48,10 @@ You can also find the completed examples in the [examples directory](examples).
 
 ## SDK API Reference docs
 
-The [Nexmo Conversation JavaScript SDK API Reference docs](https://nexmo-developer-ea.herokuapp.com/sdk/conversation/js/) are available online. If you do not have access to the docs, please contact [devrel@nexmo.com](mailto:devrel@nexmo.com)
+The [Nexmo Conversation JavaScript SDK API Reference docs](https://ea.developer.nexmo.com/sdk/conversation/javascript/) are available online. If you do not have access to the docs, please contact [devrel@nexmo.com](mailto:devrel@nexmo.com)
 
 ## Additional Resources
 
 * [Nexmo CLI](https://github.com/nexmo/nexmo-cli)
-* [Nexmo Conversation iOS SDK](https://github.com/nexmo/conversation-ios-sdk)
 * [Nexmo Conversation iOS Quickstart](https://github.com/nexmo/conversation-ios-quickstart)
-* [Nexmo Conversation Android SDK](https://github.com/nexmo/conversation-android-sdk)
 * [Nexmo Conversation Android Quickstart](https://github.com/nexmo/conversation-android-quickstart)
