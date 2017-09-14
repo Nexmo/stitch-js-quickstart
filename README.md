@@ -29,7 +29,7 @@ Upcoming features will include:
 
 ## Participating in the Early Adopter program
 
-The Early Adopter (EA) program will take place for the next couple of months with a focus on the IP messaging capabilities. During this extended Beta program there will be frequent releases with new features and bug fixes based on your feedback. Changes will be communicated with each release outlying what changed. During the Beta it is possible (and probable) that there shall be breaking changes to the SDK and API but these will be explicitly communicated beforehand.
+This first preview will focus on the IP messaging capabilities. During this extended Beta program there will be frequent releases with new features and bug fixes based on your feedback. Changes will be communicated with each release outlying what changed. During the Beta it is possible (and probable) that there shall be breaking changes to the SDK and API but these will be explicitly communicated beforehand.
 
 If your team members require access to the docs or SDK repos contact [devrel@nexmo.com](mailto:devrel@nexmo.com).
 * Ask questions, provide feedback and report problems by [creating an issue](https://github.com/Nexmo/conversation-js-quickstart/issues/new)
