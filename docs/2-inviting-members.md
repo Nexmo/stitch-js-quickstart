@@ -20,28 +20,19 @@ _Note: The steps within this section can all be done dynamically via server-side
 
 ### 1.1 - Create another User
 
-If you're continuing on from the previous guide you may already have a `APP_JWT`. If not, generate a JWT using your Application ID (`YOUR_APP_ID`).
+Create another user who will participate within the conversation. Remember to replace `YOUR_APP_ID` with the value of your Application ID:
 
 ```bash
-$ APP_JWT="$(nexmo jwt:generate ./private.key application_id=YOUR_APP_ID exp=$(($(date +%s)+86400)))"
+$  nexmo user:create private.key YOUR_APP_ID name="alice"
 ```
 
-Create another user who will participate within the conversation.
+The output of the above command will be something like this:
 
 ```bash
-$ curl -X POST https://api.nexmo.com/beta/users\
-  -H 'Authorization: Bearer '$APP_JWT \
-  -H 'Content-Type:application/json' \
-  -d '{"name":"alice"}'
+User created: USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab
 ```
 
-The output will look as follows:
-
-```json
-{"id":"USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab","href":"http://conversation.local/v1/users/USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab"}
-```
-
-Take a note of the `id` attribute as this is the unique identifier for the user that has been created. We'll refer to this as `USER_ID` later.
+That is the User ID. Take a note of it as this is the unique identifier for the user that has been created. We'll refer to this as `USER_ID` later.
 
 ### 1.2 - Generate a User JWT
 
@@ -245,30 +236,30 @@ Now run `index.html` in two side-by-side browser windows, making sure to login w
 
 ### 2.7 - Invite the second user to the conversations
 
-Finally, let's invite the user to the conversation that we created. In your terminal, run the following command and remember to replace `CONVERSATION_ID` in the URL with the ID of the Conversation you created in the first guide and the `USER_ID` with the one you got when creating the User for `alice`.
+Finally, let's invite the user to the conversation that we created. In your terminal, run the following command and remember to replace `YOUR_APP_ID` and `CONVERSATION_ID` ID of the Application and Conversation you created in the first guide and the `USER_ID` with the one you got when creating the User for `alice`.
 
 ```bash
-$ curl -X POST https://api.nexmo.com/beta/conversations/CONVERSATION_ID/members\
- -H 'Authorization: Bearer '$APP_JWT -H 'Content-Type:application/json' -d '{"action":"invite", "user_id":"USER_ID", "channel":{"type":"app"}}'
+$ nexmo member:add private.key YOUR_APP_ID CONVERSATION_ID action=invite channel='{"type":"app"}' user_id=USER_ID
 ```
 
-The response to this request will confirm that the user has been `INVITED` the "Nexmo Chat" conversation.
-
-```json
-{"id":"MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab","user_id":"USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab","state":"INVITED","timestamp":{"joined":"2017-06-17T22:23:41.072Z"},"channel":{"type":"app"},"href":"http://conversation.local/v1/conversations/CON-aaaaaaaa-bbbb-cccc-dddd-0123456789ab/members/MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab"}
-```
-
-You can also check that `alice` was invited by running the following request, replacing `CONVERSATION_ID`:
+The output of this command will confirm that the user has been added to the "Nexmo Chat" conversation.
 
 ```bash
-$ curl https://api.nexmo.com/beta/conversations/CONVERSATION_ID/members\
- -H 'Authorization: Bearer '$APP_JWT
+Member added: MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab
 ```
 
-Where you should see a response similar to the following:
+You can also check this by running the following request, replacing `YOUR_APP_ID` and `CONVERSATION_ID`:
 
-```json
-[{"user_id":"USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab","name":"MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab","user_name":"alice","state":"INVITED"}]
+```bash
+$ nexmo member:list private.key YOUR_APP_ID CONVERSATION_ID
+```
+
+Where you should see an output similar to the following:
+
+```bash
+MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab | USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab | jamie | JOINED
+MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab | USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab | alice | INVITED
+
 ```
 
 Return to the previously opened browser windows so you can see `alice` has a conversation listed now. You can click the conversation name and proceed to chat between `alice` and `jamie`.
