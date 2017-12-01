@@ -36,7 +36,7 @@
 
     <script>
         const USER_JWT = 'YOUR USER JWT';
-        const CONVERSATION_ID = 'YOUR CONVERSATION ID';
+        const YOUR_CONVERSATION_ID = 'YOUR CONVERSATION ID';
 
         class ChatApp {
             constructor() {
@@ -86,7 +86,7 @@
                     .login(userToken)
                     .then(app => {
                         console.log('*** Logged into app', app)
-                        return app.getConversation(CONVERSATION_ID)
+                        return app.getConversation(YOUR_CONVERSATION_ID)
                     })
                     .then(this.setupConversationEvents.bind(this))
                     .catch(this.errorLogger)

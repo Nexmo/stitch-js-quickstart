@@ -20,10 +20,10 @@ _Note: The steps within this section can all be done dynamically via server-side
 
 ### 1.1 - Create another User
 
-Create another user who will participate within the conversation. Remember to replace `YOUR_APP_ID` with the value of your Application ID:
+Create another user who will participate within the conversation:
 
 ```bash
-$  nexmo user:create private.key YOUR_APP_ID name="alice"
+$  nexmo user:create name="alice"
 ```
 
 The output of the above command will be something like this:
@@ -32,7 +32,7 @@ The output of the above command will be something like this:
 User created: USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab
 ```
 
-That is the User ID. Take a note of it as this is the unique identifier for the user that has been created. We'll refer to this as `USER_ID` later.
+That is the User ID. Take a note of it as this is the unique identifier for the user that has been created. We'll refer to this as `SECOND_USER_ID` later.
 
 ### 1.2 - Generate a User JWT
 
@@ -117,7 +117,7 @@ this.loginForm.addEventListener('submit', (event) => {
 
 ### 2.3 - Update the JS needed to list the Conversations
 
-In the previous quick start guide we retrieved the conversation directly using a hard-coded `CONVERSATION_ID`. This time we're going to list the conversations that the user is a member, allowing the user to select the conversation they want to join. We're going to delete the `joinConversation` method and create the `listConversations` method:
+In the previous quick start guide we retrieved the conversation directly using a hard-coded `YOUR_CONVERSATION_ID`. This time we're going to list the conversations that the user is a member, allowing the user to select the conversation they want to join. We're going to delete the `joinConversation` method and create the `listConversations` method:
 
 ```javascript
 listConversations(userToken) {
@@ -236,10 +236,10 @@ Now run `index.html` in two side-by-side browser windows, making sure to login w
 
 ### 2.7 - Invite the second user to the conversations
 
-Finally, let's invite the user to the conversation that we created. In your terminal, run the following command and remember to replace `YOUR_APP_ID` and `CONVERSATION_ID` ID of the Application and Conversation you created in the first guide and the `USER_ID` with the one you got when creating the User for `alice`.
+Finally, let's invite the user to the conversation that we created. In your terminal, run the following command and remember to replace `YOUR_APP_ID` and `YOUR_CONVERSATION_ID` ID of the Application and Conversation you created in the first guide and the `SECOND_USER_ID` with the one you got when creating the User for `alice`.
 
 ```bash
-$ nexmo member:add private.key YOUR_APP_ID CONVERSATION_ID action=invite channel='{"type":"app"}' user_id=USER_ID
+$ nexmo member:add YOUR_CONVERSATION_ID action=invite channel='{"type":"app"}' user_id=SECOND_USER_ID
 ```
 
 The output of this command will confirm that the user has been added to the "Nexmo Chat" conversation.
@@ -248,10 +248,10 @@ The output of this command will confirm that the user has been added to the "Nex
 Member added: MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab
 ```
 
-You can also check this by running the following request, replacing `YOUR_APP_ID` and `CONVERSATION_ID`:
+You can also check this by running the following request, replacing `YOUR_CONVERSATION_ID`:
 
 ```bash
-$ nexmo member:list private.key YOUR_APP_ID CONVERSATION_ID
+$ nexmo member:list YOUR_CONVERSATION_ID
 ```
 
 Where you should see an output similar to the following:

@@ -44,18 +44,20 @@ The output of the above command will be something like this:
 
 ```bash
 Application created: aaaaaaaa-bbbb-cccc-dddd-0123456789ab
+No existing config found. Writing to new file.
+Credentials written to /path/to/your/local/folder/.nexmo-app
 Private Key saved to: private.key
 ```
 
-The first item is the Application ID which you should take a note of. We'll refer to this as `YOUR_APP_ID` later. The second value is a private key location. The private key is used to generate JWTs that are used to authenticate your interactions with Nexmo.
+The first item is the Application ID which you should take a note of. We'll refer to this as `YOUR_APP_ID` later. The last value is a private key location. The private key is used to generate JWTs that are used to authenticate your interactions with Nexmo.
 
 
 ### 1.2 - Create a Conversation
 
-Create a conversation within the application. Remember to replace `YOUR_APP_ID` with the value of your Application ID:
+Create a conversation within the application:
 
 ```bash
-$ nexmo conversation:create private.key YOUR_APP_ID display_name="Nexmo Chat"
+$ nexmo conversation:create display_name="Nexmo Chat"
 ```
 
 The output of the above command will be something like this:
@@ -64,15 +66,15 @@ The output of the above command will be something like this:
 Conversation created: CON-aaaaaaaa-bbbb-cccc-dddd-0123456789ab
 ```
 
-That is the Conversation ID. Take a note of it as this is the unique identifier for the conversation that has been created. We'll refer to this as `CONVERSATION_ID` later.
+That is the Conversation ID. Take a note of it as this is the unique identifier for the conversation that has been created. We'll refer to this as `YOUR_CONVERSATION_ID` later.
 
 
 ### 1.3 - Create a User
 
-Create a user who will participate within the conversation. Remember to replace `YOUR_APP_ID` with the value of your Application ID:
+Create a user who will participate within the conversation:
 
 ```bash
-$  nexmo user:create private.key YOUR_APP_ID name="jamie"
+$  nexmo user:create name="jamie"
 ```
 
 The output of the above command will be something like this:
@@ -81,14 +83,14 @@ The output of the above command will be something like this:
 User created: USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab
 ```
 
-That is the User ID. Take a note of it as this is the unique identifier for the user that has been created. We'll refer to this as `USER_ID` later.
+That is the User ID. Take a note of it as this is the unique identifier for the user that has been created. We'll refer to this as `YOUR_USER_ID` later.
 
 ### 1.4 - Add the User to the Conversation
 
-Finally, let's add the user to the conversation that we created. Remember to replace `YOUR_APP_ID`, `CONVERSATION_ID` and `USER_ID` values.
+Finally, let's add the user to the conversation that we created. Remember to replace `YOUR_CONVERSATION_ID` and `YOUR_USER_ID` values:
 
 ```bash
-$ nexmo member:add private.key YOUR_APP_ID CONVERSATION_ID action=join channel='{"type":"app"}' user_id=USER_ID
+$ nexmo member:add YOUR_CONVERSATION_ID action=join channel='{"type":"app"}' user_id=YOUR_USER_ID
 ```
 
 The output of this command will confirm that the user has been added to the "Nexmo Chat" conversation.
@@ -97,10 +99,10 @@ The output of this command will confirm that the user has been added to the "Nex
 Member added: MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab
 ```
 
-You can also check this by running the following request, replacing `YOUR_APP_ID` and `CONVERSATION_ID`:
+You can also check this by running the following request, replacing `YOUR_CONVERSATION_ID`:
 
 ```bash
-$ nexmo member:list private.key YOUR_APP_ID CONVERSATION_ID
+$ nexmo member:list YOUR_CONVERSATION_ID
 ```
 
 Where you should see an output similar to the following:
@@ -112,7 +114,7 @@ MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab | USR-aaaaaaaa-bbbb-cccc-dddd-012345678
 
 ### 1.5 - Generate a User JWT
 
-Generate a JWT for the user and take a note of it. Remember to change the `YOUR_APP_ID` value in the command.
+Generate a JWT for the user and take a note of it. Remember to change the `YOUR_APP_ID` value in the command:
 
 ```bash
 $ USER_JWT="$(nexmo jwt:generate ./private.key sub=jamie exp=$(($(date +%s)+86400)) acl='{"paths": {"/v1/sessions/**": {}, "/v1/users/**": {}, "/v1/conversations/**": {}}}' application_id=YOUR_APP_ID)"
@@ -199,14 +201,14 @@ Include the Conversation JS SDK in the `<head>`
 
 Next, let's stub out the login workflow.
 
-Define a constant with a value of the User JWT that was created earlier and set the value to the `USER_JWT` that was generated earlier. Create a `CONVERSATION_ID` with the value of the Conversation ID that was created earlier to indicate the conversation we're going to be using.
+Define a constant with a value of the User JWT that was created earlier and set the value to the `USER_JWT` that was generated earlier. Create a `YOUR_CONVERSATION_ID` with the value of the Conversation ID that was created earlier to indicate the conversation we're going to be using.
 
 Lastly we'll create a class called `ChatApp` that creates some instance variables selecting our HTML elements for use later, an error logging method, an event logging method and stub out the functions we'll be creating later.
 
 ```html
 <script>
 const USER_JWT = 'YOUR USER JWT';
-const CONVERSATION_ID = 'YOUR CONVERSATION ID';
+const YOUR_CONVERSATION_ID = 'YOUR CONVERSATION ID';
 
 class ChatApp {
   constructor() {
@@ -280,7 +282,7 @@ joinConversation(userToken) {
 
 ### 2.5 - Accessing the Conversation Object
 
-The next step is to have a user to retrieve the Conversation that was created. The `login` method returns a promise with the `app`. A user can be a member of many conversations you can call `app.getConversations()` to get them all. In this case we know the conversation you want so we'll request it with `app.getConversation(CONVERSATION_ID)`.
+The next step is to have a user to retrieve the Conversation that was created. The `login` method returns a promise with the `app`. A user can be a member of many conversations you can call `app.getConversations()` to get them all. In this case we know the conversation you want so we'll request it with `app.getConversation(YOUR_CONVERSATION_ID)`.
 
 ```js
 joinConversation(userToken) {
@@ -288,7 +290,7 @@ joinConversation(userToken) {
     .login(userToken)
     .then(app => {
         console.log('*** Logged into app', app)
-        return app.getConversation(CONVERSATION_ID)
+        return app.getConversation(YOUR_CONVERSATION_ID)
     })
     .catch(this.errorLogger)
 }
@@ -318,7 +320,7 @@ joinConversation(userToken) {
     .login(userToken)
     .then(app => {
         console.log('*** Logged into app', app)
-        return app.getConversation(CONVERSATION_ID)
+        return app.getConversation(YOUR_CONVERSATION_ID)
     })
     .then(this.setupConversationEvents.bind(this))
     .catch(this.errorLogger)
