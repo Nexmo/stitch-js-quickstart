@@ -13,6 +13,7 @@ This guide will introduce you to the following concepts.
 ## Before you begin
 
 - Ensure you have run through the [previous guide](1-simple-conversation.md)
+- Ensure you have the previous [application set up in the CLI](https://github.com/Nexmo/nexmo-cli/tree/beta#setup-an-application)
 
 ## 1 - Setup
 
@@ -251,14 +252,16 @@ Member added: MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab
 You can also check this by running the following request, replacing `YOUR_CONVERSATION_ID`:
 
 ```bash
-$ nexmo member:list YOUR_CONVERSATION_ID
+$ nexmo member:list YOUR_CONVERSATION_ID -v
 ```
 
 Where you should see an output similar to the following:
 
 ```bash
-MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab | USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab | jamie | JOINED
-MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab | USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab | alice | INVITED
+name                                     | user_id                                  | user_name | state  
+---------------------------------------------------------------------------------------------------------
+MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab | USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab | jamie     | JOINED
+MEM-aaaaaaaa-bbbb-cccc-dddd-0123456789ab | USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab | alice     | INVITED
 
 ```
 
