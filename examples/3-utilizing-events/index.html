@@ -86,7 +86,25 @@
           for (var i = Object.keys(events).length; i > 0; i--) {
             const date = new Date(Date.parse(events[Object.keys(events)[i - 1]].timestamp))
             if (conversation.members[events[Object.keys(events)[i - 1]].from]) {
-              eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
+              switch (events[Object.keys(events)[i - 1]].type) {
+                case 'text':
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
+                  break;
+
+                case 'member:joined':
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>joined the conversation</b><br>`
+                  break;
+                case 'member:left':
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>left the conversation</b><br>`
+                  break;
+                case 'member:invited':
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>invited to the conversation</b><br>`
+                  break;
+
+                default:
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>unknown event</b><br>`
+
+              }
             }
           }
 
@@ -105,7 +123,7 @@
         conversation.on('text', (sender, message) => {
           console.log('*** Message received', sender, message)
           const date = new Date(Date.parse(message.timestamp))
-          const text = `${sender.name} @ ${date}: <b>${message.text}</b><br>`
+          const text = `${sender.name} @ ${date}: <b>${message.body.text}</b><br>`
           this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
 
           if (sender.name !== this.conversation.me.name) {
