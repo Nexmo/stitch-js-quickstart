@@ -358,4 +358,4 @@ Run `index.html` in two side-by-side browser windows to see the conversation tak
 
 ## Where next?
 
-* Have a look at the [Nexmo Conversation JS SDK API Reference](https://conversation-js-docs.herokuapp.com/)
+Try out [Quickstart 2](https://github.com/Nexmo/conversation-js-quickstart/blob/master/docs/2-inviting-members.md)
