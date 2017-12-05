@@ -352,7 +352,7 @@ setupUserEvents() {
 }
 ```
 
-That's it! Your page should now look something like [this](../examples/1-simple-conversation/index.html).
+That's it! Your page should now look something like [this](https://github.com/Nexmo/conversation-js-quickstart/blob/master/examples/1-simple-conversation/index.html).
 
 Run `index.html` in two side-by-side browser windows to see the conversation take place.
 
