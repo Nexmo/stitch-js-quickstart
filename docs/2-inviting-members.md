@@ -271,4 +271,4 @@ Thats's it! Your page should now look something like [this](../examples/2-inviti
 
 ## Where next?
 
-- Have a look at the [Nexmo Conversation JS SDK API Reference](https://conversation-js-docs.herokuapp.com/)
+- Have a look at the [Nexmo Conversation JS SDK API Reference](https://ea.developer.nexmo.com/sdk/conversation/javascript/)
