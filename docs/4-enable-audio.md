@@ -6,8 +6,8 @@ In this getting started guide we'll cover adding audio events to the Conversatio
 
 This guide will introduce you to the following concepts.
 
-- **Media Events** - `member:media` events that fire on a Conversation when media state changes
 - **Audio** - enabling and disabling Audio streams in a Conversation
+- **Media Events** - `member:media` events that fire on a Conversation when media state changes for a member
 
 ## Before you begin
 
@@ -17,156 +17,128 @@ This guide will introduce you to the following concepts.
 
 We will use the application we already created for [the third getting started guide](3-utilizing-events.md). All the basic setup has been done in the previous guides and should be in place. We can now focus on updating the client-side application.
 
-### 1.1 - Add audio buttons
-### 1.2 - Add enable audio handler
-### 1.3 - Add disable audio handler
-### 1.4 - Add member:media listener
+### 1.1 - Add audio UI
 
+First, we'll add the UI for user to enable and disable audio, as well as an `<audio>` element that we'll use to play the Audio stream from the conversation. Let's add the UI at the top of the messages area.
 
-
-
-The first thing we're going to do is add history to the existing conversation. We're going to add a method that gets all the events that happened in the conversation and displays conversation history in the message feed.
-
-```javascript
-showConversationHistory(conversation) {
-  conversation.getEvents().then((events) => {
-    var eventsHistory = ""
-    for (var i = Object.keys(events).length; i > 0; i--) {
-      const date = new Date(Date.parse(events[Object.keys(events)[i - 1]].timestamp))
-      if (conversation.members[events[Object.keys(events)[i - 1]].from]) {
-        eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
-      }
-    }
-
-    this.messageFeed.innerHTML = eventsHistory + this.messageFeed.innerHTML
-  })
-}
-```
-
-Next, update `setupConversationEvents` to call the method we just created
-
-```javascript
-setupConversationEvents(conversation) {
-  ...
-
-  this.showConversationHistory(conversation)
-}
-```
-
-### 1.2 - Add text:seen events
-
-Now that we've done that, it's time to learn about sending events into a conversation. In order to do that, we'll update the `text` event listener to acknowledge when a user received a message. We'll update the relevant bit from `setupConversationEvents` to check if a message in the conversation was not sent by the current user, and then call `message.seen()`. What this does, is it fires a `text:seen` event on the conversation.
-
-```javascript
-setupConversationEvents(conversation) {
-...
-  // Bind to events on the conversation
-  conversation.on('text', (sender, message) => {
-    console.log('*** Message received', sender, message)
-    const date = new Date(Date.parse(message.timestamp))
-    const text = `${sender.name} @ ${date}: <b>${message.body.text}</b><br>`
-    this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
-
-    if (sender.name !== this.conversation.me.name) {
-        message.seen().then(this.eventLogger('text:seen')).catch(this.errorLogger)
-    }
-  })
-...
-}
-```
-
-We're going to add a listener as well on the conversation for `text:seen`, notifying other members in the conversation that their message was seen by other members of the conversation.
-
-```javascript
-setupConversationEvents(conversation) {
-...
-  conversation.on("text:seen", (data, text) => console.log(`${data.name} saw text: ${text.body.text}`))
-}
-```
-
-### 1.3 - Add text:typing events
-
-We're going to update the conversation so that we can see when someone in typing. There are two events that enable us to do so, `text:typing:on` and `text:typing:off`, with their corresponding methods on the `conversation` object that fires them, `startTyping()` and `stopTyping()`. We'll fist update `setupConversationEvents` to listen for those events
-
-```javascript
-setupConversationEvents(conversation) {
-...
-  conversation.on("text:typing:off", data => console.log(`${data.name} stopped typing...`))
-  conversation.on("text:typing:on", data => console.log(`${data.name} started typing...`))
-}
-```
-
-Now we're going to fire those events when the user focuses or blurs the message box. We'll update the `setupUserEvents` method in order to do that
-
-```javascript
-setupUserEvents() {
-...
-  this.messageTextarea.addEventListener('focus', () => {
-    this.conversation.startTyping().then(this.eventLogger('text:typing:on')).catch(this.errorLogger)
-  });
-  this.messageTextarea.addEventListener('blur', () => {
-    this.conversation.stopTyping().then(this.eventLogger('text:typing:off')).catch(this.errorLogger)
-  })
-}
-```
-
-### 1.4 - Leave a conversation
-
-Finally, we'll add the UI for user to leave a conversation. Let's add the button at the top of the messages area.
 ```html
 <section id="messages">
-  <button id="leave">Leave Conversation</button>
+  <div>
+    <audio id="audio">
+      <source>
+    </audio>
+    <button id="enable">Enable Audio</button>
+    <button id="disable">Disable Audio</button>
+  </div>
   ...
 </section>
 
 ```
 
-And add the button in the class constructor
+And add the buttons and `<audio>` element in the class constructor
 
 ```javascript
 constructor() {
 ...
-  this.leaveButton = document.getElementById('leave')
+  this.audio = document.getElementById('audio')
+  this.enableButton = document.getElementById('enable')
+  this.disableButton = document.getElementById('disable')
 }
 ```
 
-We'll then update the `setupUserEvents` method to trigger `conversation.leave()` when the user clicks the button
+### 1.2 - Add enable audio handler
+
+We'll then update the `setupUserEvents` method to trigger `conversation.audio.enable()` when the user clicks the `Enable Audio` button. `conversation.audio.enable()` returns a promise with a stream object, which we'll use as the source for our `<audio>` element. We'll then add a listener on the `<audio>` element to start playing as soon as the metadata has been loaded.
 
 ```javascript
 setupUserEvents() {
 ...
-  this.leaveButton.addEventListener('click', () => {
-    this.conversation.leave().then(this.eventLogger('member:left')).catch(this.errorLogger)
+  this.enableButton.addEventListener('click', () => {
+    this.conversation.audio.enable().then(stream => {
+      // Older browsers may not have srcObject
+      if ("srcObject" in this.audio) {
+        this.audio.srcObject = stream;
+      } else {
+        // Avoid using this in new browsers, as it is going away.
+        this.audio.src = window.URL.createObjectURL(stream);
+      }
+
+      this.audio.onloadedmetadata = () => {
+        this.audio.play();
+      }
+
+      this.eventLogger('member:media')()
+    }).catch(this.errorLogger)
   })
 }
 ```
 
-To finish, we're going to add a listener for `member:left` in the `setupConversationEvents` method. We'll also add a helper function to handle updating the message feed when a user joins or leaves a conversation. And refactor the `member:joined` handler to use the new helper function.
+### 1.3 - Add disable audio handler
+
+Next, we'll add the ability for a user to disable the audio stream as well. In order to do this, we'll update the `setupUserEvents` method to trigger `conversation.audio.disable()` when the user clicks the `Disable Audio` button.
 
 ```javascript
-memberEventHandler(type) {
-  return (data, info) => {
-    console.log(`*** ${info.user.name} ${type} the conversation`)
-    const text = `${info.user.name} @ ${date}: <b>${type} the conversation</b><br>`
-    this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
-  }
+setupUserEvents() {
+...
+  this.disableButton.addEventListener('click', () => {
+    this.conversation.audio.disable().then(this.eventLogger('member:media')).catch(this.errorLogger)
+  })
 }
+```
 
+### 1.4 - Add member:media listener
+
+With these first parts we're sending `member:media` events into the conversation. Now we're going to register a listener for them as well that updates the `messageFeed`. In order to do that, we'll add a listener for `member:media` events at the end of the `setupConversationEvents` method
+
+```javascript
 setupConversationEvents(conversation) {
   ...
-  conversation.on("member:joined", this.memberEventHandler('joined'))
-  conversation.on("member:left", this.memberEventHandler('left'))
+
+  conversation.on("member:media", (from, media) => {
+    console.log(`*** Member changed media state`, from, media)
+    const text = `${from.name} <b>${media.audio ? 'enabled' : 'disabled'} audio in the conversation</b><br>`
+    this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
+  })
+
+}
+```
+
+If we want the conversation history to be updated, we need to add a case for `member:media` in the `showConversationHistory` switch:
+
+```javascript
+showConversationHistory(conversation) {
+  ...
+  switch (events[Object.keys(events)[i - 1]].type) {
+    ...
+    case 'member:media':
+      eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.audio ? "enabled" : "disabled"} audio</b><br>`
+      break;
+    ...
+  }
 }
 ```
 
 
 ### 1.5 - Open the conversation in two browser windows
 
-Now run `index.html` in two side-by-side browser windows, making sure to login with the user name `jamie` in one and with `alice` in the other. Open the developer tools console and start chatting. You'll see events being logged in the console.
+Now run `index.html` in two side-by-side browser windows, making sure to login with the user name `jamie` in one and with `alice` in the other. Enable audio on both and start talking. You'll also see events being logged in the browser console.
 
-Thats's it! Your page should now look something like [this](../examples/3-utilizing-events/index.html).
-
+Thats's it! Your page should now look something like [this](../examples/4-enable-audio/index.html).
 
 ## Where next?
 
-- Have a look at the [Nexmo Conversation JS SDK API Reference](https://conversation-js-docs.herokuapp.com/)
+- Have a look at the [Nexmo Conversation JS SDK API Reference](https://ea.developer.nexmo.com/sdk/conversation/javascript/)
+
+## ICE Servers
+If for some reason the WebRTC P2P connection doesn't work on your network, you need to overwrite the [ICE Servers](https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment) when you create you `ConversationClient` instance:
+
+```javascript
+new ConversationClient({
+  debug: false,
+  iceServers: {
+    urls: 'turn:138.68.169.35:3478?transport=tcp',
+    credential: 'bar',
+    username: 'foo2'
+  }
+})
+```
