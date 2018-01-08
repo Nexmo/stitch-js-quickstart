@@ -157,9 +157,10 @@ To finish, we're going to add a listener for `member:left` in the `setupConversa
 
 ```javascript
 memberEventHandler(type) {
-  return (data, info) => {
-    console.log(`*** ${info.user.name} ${type} the conversation`)
-    const text = `${info.user.name} @ ${date}: <b>${type} the conversation</b><br>`
+  return (member, event) => {
+    const date = new Date(Date.parse(event.timestamp[type]))
+    console.log(`*** ${member.name} ${type} the conversation`)
+    const text = `${member.name} @ ${date}: <b>${type} the conversation</b><br>`
     this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
   }
 }
