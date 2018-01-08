@@ -69,9 +69,10 @@
       }
 
       memberEventHandler(type) {
-        return (data, info) => {
-          console.log(`*** ${info.user.name} ${type} the conversation`)
-          const text = `${info.user.name} @ ${date}: <b>${type} the conversation</b><br>`
+        return (member, event) => {
+          const date = new Date(Date.parse(event.timestamp[type]))
+          console.log(`*** ${member.name} ${type} the conversation`)
+          const text = `${member.name} @ ${date}: <b>${type} the conversation</b><br>`
           this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
         }
       }
@@ -169,12 +170,12 @@
           .then(app => {
             console.log('*** Logged into app', app)
 
-            app.on("member:invited", (data, invitation) => {
+            app.on("member:invited", (member, event) => {
               //identify the sender.
-              console.log("*** Invitation received:", invitation);
+              console.log("*** Invitation received:", event);
 
               //accept an invitation.
-              app.getConversation(invitation.cid || invitation.body.cname)
+              app.getConversation(event.cid || event.body.cname)
                 .then((conversation) => {
                   this.conversation = conversation
                   conversation.join().then(() => {
