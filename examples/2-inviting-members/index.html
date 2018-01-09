@@ -85,9 +85,10 @@
           this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
         })
 
-        conversation.on("member:joined", (data, info) => {
-          console.log(`*** ${info.user.name} joined the conversation`)
-          const text = `${info.user.name} @ ${date}: <b>joined the conversation</b><br>`
+        conversation.on("member:joined", (member, event) => {
+          const date = new Date(Date.parse(event.timestamp))
+          console.log(`*** ${member.user.name} joined the conversation`)
+          const text = `${member.user.name} @ ${date}: <b>joined the conversation</b><br>`
           this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
         })
       }
@@ -120,12 +121,12 @@
           .then(app => {
             console.log('*** Logged into app', app)
 
-            app.on("member:invited", (data, invitation) => {
+            app.on("member:invited", (member, event) => {
               //identify the sender.
-              console.log("*** Invitation received:", invitation);
+              console.log("*** Invitation received:", event);
 
               //accept an invitation.
-              app.getConversation(invitation.cid || invitation.body.cname)
+              app.getConversation(event.cid || event.body.cname)
                 .then((conversation) => {
                   this.conversation = conversation
                   conversation.join().then(() => {

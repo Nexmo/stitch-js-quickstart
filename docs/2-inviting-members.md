@@ -187,12 +187,12 @@ listConversations(userToken) {
         .then(app => {
             console.log('*** Logged into app', app)
 
-            app.on("member:invited", (data, invitation) => {
+            app.on("member:invited", (member, event) => {
               //identify the sender.
-              console.log("*** Invitation received:", invitation);
+              console.log("*** Invitation received:", event);
 
               //accept an invitation.
-              app.getConversation(invitation.cid || invitation.body.cname)
+              app.getConversation(event.cid || event.body.cname)
                 .then((conversation) => {
                   this.conversation = conversation
                   conversation.join().then(() => {
@@ -200,6 +200,7 @@ listConversations(userToken) {
                     conversationDictionary[this.conversation.id] = this.conversation
                     this.updateConversationsList(conversationDictionary)
                   }).catch(this.errorLogger)
+
                 })
                 .catch(this.errorLogger)
             })
@@ -223,9 +224,10 @@ We'll update the `setupConversationEvents` method to listen for the `member:join
 setupConversationEvents(conversation) {
   ...
 
-  conversation.on("member:joined", (data, info) => {
-    console.log(`*** ${info.user.name} joined the conversation`)
-    const text = `${info.user.name} @ ${date}: <b>joined the conversation</b><br>`
+  conversation.on("member:joined", (member, event) => {
+    const date = new Date(Date.parse(event.timestamp))
+    console.log(`*** ${member.user.name} joined the conversation`)
+    const text = `${member.user.name} @ ${date}: <b>joined the conversation</b><br>`
     this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
   })
 }
@@ -271,4 +273,4 @@ Thats's it! Your page should now look something like [this](../examples/2-inviti
 
 ## Where next?
 
-- Have a look at the [Nexmo Conversation JS SDK API Reference](https://conversation-js-docs.herokuapp.com/)
+- Have a look at the [Nexmo Conversation JS SDK API Reference](https://ea.developer.nexmo.com/sdk/conversation/javascript/)

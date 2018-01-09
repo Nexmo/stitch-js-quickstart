@@ -31,21 +31,21 @@ showConversationHistory(conversation) {
       if (conversation.members[events[Object.keys(events)[i - 1]].from]) {
         switch (events[Object.keys(events)[i - 1]].type) {
           case 'text':
-            eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
+            eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
             break;
 
           case 'member:joined':
-            eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>joined the conversation</b><br>`
+            eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>joined the conversation</b><br>`
             break;
           case 'member:left':
-            eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>left the conversation</b><br>`
+            eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>left the conversation</b><br>`
             break;
           case 'member:invited':
-            eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>invited to the conversation</b><br>`
+            eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>invited to the conversation</b><br>`
             break;
 
           default:
-            eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>unknown event</b><br>`
+            eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>unknown event</b><br>`
         }
       }
     }
@@ -157,9 +157,10 @@ To finish, we're going to add a listener for `member:left` in the `setupConversa
 
 ```javascript
 memberEventHandler(type) {
-  return (data, info) => {
-    console.log(`*** ${info.user.name} ${type} the conversation`)
-    const text = `${info.user.name} @ ${date}: <b>${type} the conversation</b><br>`
+  return (member, event) => {
+    const date = new Date(Date.parse(event.timestamp))
+    console.log(`*** ${member.user.name} ${type} the conversation`)
+    const text = `${member.user.name} @ ${date}: <b>${type} the conversation</b><br>`
     this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
   }
 }
@@ -181,4 +182,4 @@ Thats's it! Your page should now look something like [this](../examples/3-utiliz
 
 ## Where next?
 
-- Have a look at the [Nexmo Conversation JS SDK API Reference](https://conversation-js-docs.herokuapp.com/)
+- Have a look at the [Nexmo Conversation JS SDK API Reference](https://ea.developer.nexmo.com/sdk/conversation/javascript/)
