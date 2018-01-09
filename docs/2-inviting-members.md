@@ -225,9 +225,9 @@ setupConversationEvents(conversation) {
   ...
 
   conversation.on("member:joined", (member, event) => {
-    const date = new Date(Date.parse(event.timestamp["joined"]))
-    console.log(`*** ${member.name} joined the conversation`)
-    const text = `${member.name} @ ${date}: <b>joined the conversation</b><br>`
+    const date = new Date(Date.parse(event.timestamp))
+    console.log(`*** ${member.user.name} joined the conversation`)
+    const text = `${member.user.name} @ ${date}: <b>joined the conversation</b><br>`
     this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
   })
 }

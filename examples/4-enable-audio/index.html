@@ -80,9 +80,9 @@
 
       memberEventHandler(type) {
         return (member, event) => {
-          const date = new Date(Date.parse(event.timestamp[type]))
-          console.log(`*** ${member.name} ${type} the conversation`)
-          const text = `${member.name} @ ${date}: <b>${type} the conversation</b><br>`
+          const date = new Date(Date.parse(event.timestamp))
+          console.log(`*** ${member.user.name} ${type} the conversation`)
+          const text = `${member.user.name} @ ${date}: <b>${type} the conversation</b><br>`
           this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
         }
       }
@@ -99,24 +99,24 @@
             if (conversation.members[events[Object.keys(events)[i - 1]].from]) {
               switch (events[Object.keys(events)[i - 1]].type) {
                 case 'text':
-                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
                   break;
 
                 case 'member:joined':
-                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>joined the conversation</b><br>`
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>joined the conversation</b><br>`
                   break;
                 case 'member:left':
-                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>left the conversation</b><br>`
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>left the conversation</b><br>`
                   break;
                 case 'member:invited':
-                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>invited to the conversation</b><br>`
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>invited to the conversation</b><br>`
                   break;
 
                 case 'member:media':
-                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.audio ? "enabled" : "disabled"} audio</b><br>`
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.audio ? "enabled" : "disabled"} audio</b><br>`
                   break;
                 default:
-                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>unknown event</b><br>`
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>unknown event</b><br>`
 
               }
             }
@@ -147,9 +147,9 @@
 
         conversation.on("member:joined", this.memberEventHandler('joined'))
         conversation.on("member:left", this.memberEventHandler('left'))
-        conversation.on("member:media", (from, media) => {
-          console.log(`*** Member changed media state`, from, media)
-          const text = `${from.name} <b>${media.audio ? 'enabled' : 'disabled'} audio in the conversation</b><br>`
+        conversation.on("member:media", (member, event) => {
+          console.log(`*** Member changed media state`, member, event)
+          const text = `${member.user.name} <b>${event.body.audio ? 'enabled' : 'disabled'} audio in the conversation</b><br>`
           this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
         })
 
@@ -250,7 +250,8 @@
         })
 
         this.enableButton.addEventListener('click', () => {
-          this.conversation.audio.enable().then(stream => {
+
+          this.conversation.media.enable().then(stream => {
             // Older browsers may not have srcObject
             if ("srcObject" in this.audio) {
               this.audio.srcObject = stream;
@@ -268,7 +269,7 @@
         })
 
         this.disableButton.addEventListener('click', () => {
-          this.conversation.audio.disable().then(this.eventLogger('member:media')).catch(this.errorLogger)
+          this.conversation.media.disable().then(this.eventLogger('member:media')).catch(this.errorLogger)
         })
       }
     }

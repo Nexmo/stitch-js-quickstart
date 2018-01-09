@@ -48,13 +48,13 @@ constructor() {
 
 ### 1.2 - Add enable audio handler
 
-We'll then update the `setupUserEvents` method to trigger `conversation.audio.enable()` when the user clicks the `Enable Audio` button. `conversation.audio.enable()` returns a promise with a stream object, which we'll use as the source for our `<audio>` element. We'll then add a listener on the `<audio>` element to start playing as soon as the metadata has been loaded.
+We'll then update the `setupUserEvents` method to trigger `conversation.media.enable()` when the user clicks the `Enable Audio` button. `conversation.media.enable()` returns a promise with a stream object, which we'll use as the source for our `<audio>` element. We'll then add a listener on the `<audio>` element to start playing as soon as the metadata has been loaded.
 
 ```javascript
 setupUserEvents() {
 ...
   this.enableButton.addEventListener('click', () => {
-    this.conversation.audio.enable().then(stream => {
+    this.conversation.media.enable().then(stream => {
       // Older browsers may not have srcObject
       if ("srcObject" in this.audio) {
         this.audio.srcObject = stream;
@@ -75,13 +75,13 @@ setupUserEvents() {
 
 ### 1.3 - Add disable audio handler
 
-Next, we'll add the ability for a user to disable the audio stream as well. In order to do this, we'll update the `setupUserEvents` method to trigger `conversation.audio.disable()` when the user clicks the `Disable Audio` button.
+Next, we'll add the ability for a user to disable the audio stream as well. In order to do this, we'll update the `setupUserEvents` method to trigger `conversation.media.disable()` when the user clicks the `Disable Audio` button.
 
 ```javascript
 setupUserEvents() {
 ...
   this.disableButton.addEventListener('click', () => {
-    this.conversation.audio.disable().then(this.eventLogger('member:media')).catch(this.errorLogger)
+    this.conversation.media.disable().then(this.eventLogger('member:media')).catch(this.errorLogger)
   })
 }
 ```
@@ -94,9 +94,9 @@ With these first parts we're sending `member:media` events into the conversation
 setupConversationEvents(conversation) {
   ...
 
-  conversation.on("member:media", (from, media) => {
-    console.log(`*** Member changed media state`, from, media)
-    const text = `${from.name} <b>${media.audio ? 'enabled' : 'disabled'} audio in the conversation</b><br>`
+  conversation.on("member:media", (member, event) => {
+    console.log(`*** Member changed media state`, member, event)
+    const text = `${member.user.name} <b>${event.body.audio ? 'enabled' : 'disabled'} audio in the conversation</b><br>`
     this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
   })
 
@@ -111,7 +111,7 @@ showConversationHistory(conversation) {
   switch (events[Object.keys(events)[i - 1]].type) {
     ...
     case 'member:media':
-      eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.audio ? "enabled" : "disabled"} audio</b><br>`
+      eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.audio ? "enabled" : "disabled"} audio</b><br>`
       break;
     ...
   }
