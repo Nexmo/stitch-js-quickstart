@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "nexmo-conversation": "^0.1.11"
+    "nexmo-conversation": "^0.1.14"
   }
 }
