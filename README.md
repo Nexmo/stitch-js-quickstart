@@ -39,6 +39,7 @@ If you want communicate with us during the EA program you can:
 * [Simple conversation](docs/1-simple-conversation.md)
 * [Inviting members](docs/2-inviting-members.md)
 * [Utilizing events](docs/3-utilizing-events.md)
+* [Enable audio](docs/4-enable-audio.md)
 
 
 You can also find the completed examples in the [examples directory](examples).
