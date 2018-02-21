@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <style>
+    #login,
+    #messages {
+      width: 80% height: 300px
+    }
+
+    #messages {
+      display: none
+    }
+
+    #conversations {
+      display: none
+    }
+  </style>
+  <script src="./node_modules/nexmo-conversation/dist/conversationClient.js"></script>
+</head>
+
+<body>
+
+  <form id="login">
+    <h1>Login</h1>
+    <input type="text" name="username" value="">
+    <input type="submit" value="Login" />
+  </form>
+
+  <section id="messages">
+    <div>
+      <audio id="audio">
+        <source>
+      </audio>
+      <button id="enable">Enable Audio</button>
+      <button id="disable">Disable Audio</button>
+    </div>
+    <button id="leave">Leave Conversation</button>
+    <h1>Messages</h1>
+
+    <div id="messageFeed"></div>
+
+    <textarea id="messageTextarea"></textarea>
+    <br>
+    <button id="send">Send</button>
+  </section>
+
+  <section id="conversations">
+    <h1>Conversations</h1>
+  </section>
+
+  <script>
+    const USER_JWT = 'YOUR USER JWT'
+    const YOUR_CONVERSATION_ID = 'YOUR CONVERSATION ID'
+    const SECOND_USER_JWT = 'SECOND USER JWT'
+
+    class ChatApp {
+      constructor() {
+        this.messageTextarea = document.getElementById('messageTextarea')
+        this.messageFeed = document.getElementById('messageFeed')
+        this.sendButton = document.getElementById('send')
+        this.loginForm = document.getElementById('login')
+        this.conversationList = document.getElementById('conversations')
+        this.leaveButton = document.getElementById('leave')
+        this.audio = document.getElementById('audio')
+        this.enableButton = document.getElementById('enable')
+        this.disableButton = document.getElementById('disable')
+        this.setupUserEvents()
+      }
+
+      errorLogger(error) {
+        console.log(error)
+      }
+
+      eventLogger(event) {
+        return () => {
+          console.log("'%s' event was sent", event)
+        }
+      }
+
+      memberEventHandler(type) {
+        return (member, event) => {
+          const date = new Date(Date.parse(event.timestamp))
+          console.log(`*** ${member.user.name} ${type} the conversation`)
+          const text = `${member.user.name} @ ${date}: <b>${type} the conversation</b><br>`
+          this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
+        }
+      }
+
+      authenticate(username) {
+        return username.toLowerCase() === "jamie" ? USER_JWT : SECOND_USER_JWT
+      }
+
+      showConversationHistory(conversation) {
+        conversation.getEvents().then((events) => {
+          var eventsHistory = ""
+          for (var i = Object.keys(events).length; i > 0; i--) {
+            const date = new Date(Date.parse(events[Object.keys(events)[i - 1]].timestamp))
+            if (conversation.members[events[Object.keys(events)[i - 1]].from]) {
+              switch (events[Object.keys(events)[i - 1]].type) {
+                case 'text':
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
+                  break;
+
+                case 'member:joined':
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>joined the conversation</b><br>`
+                  break;
+                case 'member:left':
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>left the conversation</b><br>`
+                  break;
+                case 'member:invited':
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>invited to the conversation</b><br>`
+                  break;
+
+                case 'member:media':
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.audio ? "enabled" : "disabled"} audio</b><br>`
+                  break;
+                default:
+                  eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>unknown event</b><br>`
+
+              }
+            }
+          }
+
+          this.messageFeed.innerHTML = eventsHistory + this.messageFeed.innerHTML
+        })
+      }
+
+      setupConversationEvents(conversation) {
+        this.conversation = conversation
+        this.conversationList.style.display = 'none'
+        document.getElementById("messages").style.display = "block"
+        console.log('*** Conversation Retrieved', conversation)
+        console.log('*** Conversation Member', conversation.me)
+
+        // Bind to events on the conversation
+        conversation.on('text', (sender, message) => {
+          console.log('*** Message received', sender, message)
+          const date = new Date(Date.parse(message.timestamp))
+          const text = `${sender.name} @ ${date}: <b>${message.body.text}</b><br>`
+          this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
+
+          if (sender.name !== this.conversation.me.name) {
+            message.seen().then(this.eventLogger('text:seen')).catch(this.errorLogger)
+          }
+        })
+
+        conversation.on("member:joined", this.memberEventHandler('joined'))
+        conversation.on("member:left", this.memberEventHandler('left'))
+        conversation.on("member:media", (member, event) => {
+          console.log(`*** Member changed media state`, member, event)
+          const text = `${member.user.name} <b>${event.body.audio ? 'enabled' : 'disabled'} audio in the conversation</b><br>`
+          this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
+        })
+
+        this.showConversationHistory(conversation)
+
+        conversation.on("text:seen", (data, text) => console.log(`${data.name} saw text: ${text.body.text}`))
+        conversation.on("text:typing:off", data => console.log(`${data.name} stopped typing...`))
+        conversation.on("text:typing:on", data => console.log(`${data.name} started typing...`))
+      }
+
+      updateConversationsList(conversations) {
+        let conversationsElement = document.createElement("ul")
+        for (let id in conversations) {
+          let conversationElement = document.createElement("li")
+          conversationElement.textContent = conversations[id].display_name
+          conversationElement.addEventListener("click", () => this.setupConversationEvents(conversations[id]))
+          conversationsElement.appendChild(conversationElement)
+        }
+
+        if (!conversationsElement.childNodes.length) {
+          conversationsElement.textContent = "You are not a member of any conversations"
+        }
+
+        this.conversationList.appendChild(conversationsElement)
+        this.conversationList.style.display = 'block'
+        this.loginForm.style.display = 'none'
+      }
+
+
+      listConversations(userToken) {
+
+        new ConversationClient({
+            debug: false,
+            iceServers: {
+              urls: 'turn:138.68.169.35:3478?transport=tcp',
+              credential: 'bar',
+              username: 'foo2'
+            }
+          })
+          .login(userToken)
+          .then(app => {
+            console.log('*** Logged into app', app)
+
+            app.on("member:invited", (member, event) => {
+              //identify the sender.
+              console.log("*** Invitation received:", event);
+
+              //accept an invitation.
+              app.getConversation(event.cid || event.body.cname)
+                .then((conversation) => {
+                  this.conversation = conversation
+                  conversation.join().then(() => {
+                    var conversationDictionary = {}
+                    conversationDictionary[this.conversation.id] = this.conversation
+                    this.updateConversationsList(conversationDictionary)
+                  }).catch(this.errorLogger)
+
+                })
+                .catch(this.errorLogger)
+            })
+            return app.getConversations()
+          })
+          .then((conversations) => {
+            console.log('*** Retrieved conversations', conversations)
+
+            this.updateConversationsList(conversations)
+
+          })
+          .catch(this.errorLogger)
+      }
+
+      setupUserEvents() {
+        this.sendButton.addEventListener('click', () => {
+          this.conversation.sendText(this.messageTextarea.value).then(() => {
+            this.eventLogger('text')()
+            this.messageTextarea.value = ''
+          }).catch(this.errorLogger)
+
+        })
+
+        this.loginForm.addEventListener('submit', (event) => {
+          event.preventDefault()
+          const userToken = this.authenticate(this.loginForm.children.username.value)
+          if (userToken) {
+            this.listConversations(userToken)
+          }
+        })
+
+        this.messageTextarea.addEventListener('focus', () => {
+          this.conversation.startTyping().then(this.eventLogger('text:typing:on')).catch(this.errorLogger)
+        });
+        this.messageTextarea.addEventListener('blur', () => {
+          this.conversation.stopTyping().then(this.eventLogger('text:typing:off')).catch(this.errorLogger)
+        })
+
+        this.leaveButton.addEventListener('click', () => {
+          this.conversation.leave().then(this.eventLogger('member:left')).catch(this.errorLogger)
+        })
+
+        this.enableButton.addEventListener('click', () => {
+
+          this.conversation.media.enable().then(stream => {
+            // Older browsers may not have srcObject
+            if ("srcObject" in this.audio) {
+              this.audio.srcObject = stream;
+            } else {
+              // Avoid using this in new browsers, as it is going away.
+              this.audio.src = window.URL.createObjectURL(stream);
+            }
+
+            this.audio.onloadedmetadata = () => {
+              this.audio.play();
+            }
+
+            this.eventLogger('member:media')()
+          }).catch(this.errorLogger)
+        })
+
+        this.disableButton.addEventListener('click', () => {
+          this.conversation.media.disable().then(this.eventLogger('member:media')).catch(this.errorLogger)
+        })
+      }
+    }
+
+    new ChatApp()
+  </script>
+</body>
+
+</html>
