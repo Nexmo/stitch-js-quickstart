@@ -182,12 +182,7 @@
       listConversations(userToken) {
 
         new ConversationClient({
-            debug: false,
-            iceServers: {
-              urls: 'turn:138.68.169.35:3478?transport=tcp',
-              credential: 'bar',
-              username: 'foo2'
-            }
+            debug: false
           })
           .login(userToken)
           .then(app => {
