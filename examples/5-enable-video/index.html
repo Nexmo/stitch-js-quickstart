@@ -73,10 +73,10 @@
         this.conversationList = document.getElementById('conversations')
         this.leaveButton = document.getElementById('leave')
         this.audio = document.getElementById('audio')
-        this.selfVideo = document.getElementById('self-video')
-        this.conversationVideo = document.getElementById('conversation-video')
         this.enableButton = document.getElementById('enable')
         this.disableButton = document.getElementById('disable')
+        this.selfVideo = document.getElementById('self-video')
+        this.conversationVideo = document.getElementById('conversation-video')
         this.enableVideoButton = document.getElementById('enable-video')
         this.disableVideoButton = document.getElementById('disable-video')
         this.setupUserEvents()
@@ -307,11 +307,14 @@
         })
 
         this.enableVideoButton.addEventListener('click', () => {
-          this.conversation.media.enable({video: "both"}).then(this.eventLogger('member:media')).catch(this.errorLogger)
+          this.conversation.media.enable({
+            video: "both"
+          }).then(this.eventLogger('member:media')).catch(this.errorLogger)
         })
-
         this.disableVideoButton.addEventListener('click', () => {
-          this.conversation.media.disable({video: "both"}).then(this.eventLogger('member:media')).catch(this.errorLogger)
+          this.conversation.media.disable({
+            video: "both"
+          }).then(this.eventLogger('member:media')).catch(this.errorLogger)
         })
       }
     }
