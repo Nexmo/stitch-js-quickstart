@@ -98,6 +98,10 @@
             const date = new Date(Date.parse(events[Object.keys(events)[i - 1]].timestamp))
             if (conversation.members[events[Object.keys(events)[i - 1]].from]) {
               switch (events[Object.keys(events)[i - 1]].type) {
+                case 'text:seen':
+                  break;
+                case 'text:delivered':
+                  break;
                 case 'text':
                   eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
                   break;
@@ -137,10 +141,10 @@
         conversation.on('text', (sender, message) => {
           console.log('*** Message received', sender, message)
           const date = new Date(Date.parse(message.timestamp))
-          const text = `${sender.name} @ ${date}: <b>${message.body.text}</b><br>`
+          const text = `${sender.user.name} @ ${date}: <b>${message.body.text}</b><br>`
           this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
 
-          if (sender.name !== this.conversation.me.name) {
+          if (sender.user.name !== this.conversation.me.user.name) {
             message.seen().then(this.eventLogger('text:seen')).catch(this.errorLogger)
           }
         })
@@ -155,9 +159,9 @@
 
         this.showConversationHistory(conversation)
 
-        conversation.on("text:seen", (data, text) => console.log(`${data.name} saw text: ${text.body.text}`))
-        conversation.on("text:typing:off", data => console.log(`${data.name} stopped typing...`))
-        conversation.on("text:typing:on", data => console.log(`${data.name} started typing...`))
+        conversation.on("text:seen", (data, text) => console.log(`${data.user.name} saw text: ${text.body.text}`))
+        conversation.on("text:typing:off", data => console.log(`${data.user.name} stopped typing...`))
+        conversation.on("text:typing:on", data => console.log(`${data.user.name} started typing...`))
       }
 
       updateConversationsList(conversations) {
