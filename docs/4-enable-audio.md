@@ -123,22 +123,8 @@ showConversationHistory(conversation) {
 
 Now run `index.html` in two side-by-side browser windows, making sure to login with the user name `jamie` in one and with `alice` in the other. Enable audio on both and start talking. You'll also see events being logged in the browser console.
 
-Thats's it! Your page should now look something like [this](../examples/4-enable-audio/index.html).
+Thats's it! Your page should now look something like [this](https://github.com/Nexmo/conversation-js-quickstart/blob/master/examples/4-enable-audio/index.html).
 
 ## Where next?
 
-- Have a look at the [Nexmo Conversation JS SDK API Reference](https://ea.developer.nexmo.com/sdk/conversation/javascript/)
-
-## ICE Servers
-If for some reason the WebRTC P2P connection doesn't work on your network, you need to overwrite the [ICE Servers](https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment) when you create you `ConversationClient` instance:
-
-```javascript
-new ConversationClient({
-  debug: false,
-  iceServers: {
-    urls: 'turn:138.68.169.35:3478?transport=tcp',
-    credential: 'bar',
-    username: 'foo2'
-  }
-})
-```
+- Have a look at the [Nexmo Conversation JS SDK API Reference](https://developer.nexmo.com/sdk/stitch/javascript/)

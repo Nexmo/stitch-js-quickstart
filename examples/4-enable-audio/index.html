@@ -113,6 +113,10 @@
             const date = new Date(Date.parse(events[Object.keys(events)[i - 1]].timestamp))
             if (conversation.members[events[Object.keys(events)[i - 1]].from]) {
               switch (events[Object.keys(events)[i - 1]].type) {
+                case 'text:seen':
+                  break;
+                case 'text:delivered':
+                  break;
                 case 'text':
                   eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
                   break;
@@ -159,7 +163,7 @@
           const text = `${sender.user.name} @ ${date}: <b>${message.body.text}</b><br>`
           this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
 
-          if (sender.name !== this.conversation.me.name) {
+          if (sender.user.name !== this.conversation.me.user.name) {
             message.seen().then(this.eventLogger('text:seen')).catch(this.errorLogger)
           }
         })
@@ -178,20 +182,9 @@
 
         this.showConversationHistory(conversation)
 
-        conversation.on("text:seen", (data, text) => console.log(`${data.name} saw text: ${text.body.text}`))
-        conversation.on("text:typing:off", data => console.log(`${data.name} stopped typing...`))
-        conversation.on("text:typing:on", data => console.log(`${data.name} started typing...`))
-
-        conversation.me.on("media:stream:on", (stream) => {
-          this.selfVideo.srcObject = stream
-        })
-
-        for (var i = Object.keys(conversation.members).length; i > 0; i--) {
-          conversation.members[Object.keys(conversation.members)[i - 1]].on("media:stream:on", (stream) => {
-            this.conversationVideo.srcObject = stream
-          })
-        }
-
+        conversation.on("text:seen", (data, text) => console.log(`${data.user.name} saw text: ${text.body.text}`))
+        conversation.on("text:typing:off", data => console.log(`${data.user.name} stopped typing...`))
+        conversation.on("text:typing:on", data => console.log(`${data.user.name} started typing...`))
       }
 
       updateConversationsList(conversations) {
@@ -216,12 +209,7 @@
       listConversations(userToken) {
 
         new ConversationClient({
-            debug: false,
-            iceServers: {
-              urls: 'turn:138.68.169.35:3478?transport=tcp',
-              credential: 'bar',
-              username: 'foo2'
-            }
+            debug: false
           })
           .login(userToken)
           .then(app => {

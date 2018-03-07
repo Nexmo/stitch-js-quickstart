@@ -1,5 +1,5 @@
 {
-  "name": "inviting-members",
+  "name": "utilizing-events",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "nexmo-conversation": "^0.1.14"
+    "nexmo-conversation": "^0.1.19"
   }
 }

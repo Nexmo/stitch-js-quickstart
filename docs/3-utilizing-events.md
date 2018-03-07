@@ -30,6 +30,10 @@ showConversationHistory(conversation) {
       const date = new Date(Date.parse(events[Object.keys(events)[i - 1]].timestamp))
       if (conversation.members[events[Object.keys(events)[i - 1]].from]) {
         switch (events[Object.keys(events)[i - 1]].type) {
+          case 'text:seen':
+            break;
+          case 'text:delivered':
+            break;
           case 'text':
             eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
             break;
@@ -76,10 +80,10 @@ setupConversationEvents(conversation) {
   conversation.on('text', (sender, message) => {
     console.log('*** Message received', sender, message)
     const date = new Date(Date.parse(message.timestamp))
-    const text = `${sender.name} @ ${date}: <b>${message.body.text}</b><br>`
+    const text = `${sender.user.name} @ ${date}: <b>${message.body.text}</b><br>`
     this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
 
-    if (sender.name !== this.conversation.me.name) {
+    if (sender.user.name !== this.conversation.me.user.name) {
         message.seen().then(this.eventLogger('text:seen')).catch(this.errorLogger)
     }
   })
@@ -92,7 +96,7 @@ We're going to add a listener as well on the conversation for `text:seen`, notif
 ```javascript
 setupConversationEvents(conversation) {
 ...
-  conversation.on("text:seen", (data, text) => console.log(`${data.name} saw text: ${text.body.text}`))
+  conversation.on("text:seen", (data, text) => console.log(`${data.user.name} saw text: ${text.body.text}`))
 }
 ```
 
@@ -103,8 +107,8 @@ We're going to update the conversation so that we can see when someone in typing
 ```javascript
 setupConversationEvents(conversation) {
 ...
-  conversation.on("text:typing:off", data => console.log(`${data.name} stopped typing...`))
-  conversation.on("text:typing:on", data => console.log(`${data.name} started typing...`))
+  conversation.on("text:typing:off", data => console.log(`${data.user.name} stopped typing...`))
+  conversation.on("text:typing:on", data => console.log(`${data.user.name} started typing...`))
 }
 ```
 
@@ -177,9 +181,10 @@ setupConversationEvents(conversation) {
 
 Now run `index.html` in two side-by-side browser windows, making sure to login with the user name `jamie` in one and with `alice` in the other. Open the developer tools console and start chatting. You'll see events being logged in the console.
 
-Thats's it! Your page should now look something like [this](../examples/3-utilizing-events/index.html).
+Thats's it! Your page should now look something like [this](https://github.com/Nexmo/conversation-js-quickstart/blob/master/examples/3-utilizing-events/index.html).
 
 
 ## Where next?
 
-- Have a look at the [Nexmo Conversation JS SDK API Reference](https://ea.developer.nexmo.com/sdk/conversation/javascript/)
+- Try out [Quickstart 4](https://developer.nexmo.com/stitch/in-app-voice/guides/1-enable-audio)
+- Have a look at the [Nexmo Conversation JS SDK API Reference](https://developer.nexmo.com/sdk/stitch/javascript/)
