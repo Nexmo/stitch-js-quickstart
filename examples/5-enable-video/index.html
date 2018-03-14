@@ -58,11 +58,9 @@
   </section>
 
   <script>
-    const USER_JWT =
-      'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MTk2NDEzNTcsImp0aSI6ImQ0ODNlNDEwLTFhZTAtMTFlOC04M2RjLTJmODgyOGE5MDlkYSIsInN1YiI6ImphbWllIiwiZXhwIjoiMTUxOTcyNzc1NyIsImFjbCI6eyJwYXRocyI6eyIvdjEvc2Vzc2lvbnMvKioiOnt9LCIvdjEvdXNlcnMvKioiOnt9LCIvdjEvY29udmVyc2F0aW9ucy8qKiI6e319fSwiYXBwbGljYXRpb25faWQiOiI4YTNiNDlmYy1kZDFhLTQ0MDItYTZkZS1iZDE3NGEyMWYyODQifQ.GxfveYp1RxqM-U6zwhBqdhOq1GCu-k0BcwivpJb8hls3LuOWmco7sZIkLSrde4cbQIIcqXVMncHCgm51kU2WR3ixZjhX_elFht8xwbjrjD2YpdQnzhRFH7mUXRHbM_VWs_T_GlaApP_-i2JBZzshLwdkJz-F3m9Gy0P3xa7oOZNH1Vm8NRBpEfrnjHmGH4VJY2QB1ebp5wyTpUcTXsTEjWtAG3LO84eCAWCRRLDontBY9H0QBIsXh5ZplKiyyQlqH8yR2yke29bSgrA5jf6zTGs7LH66kqWEX2Wf-YiSqHcCt_MDD_Nm9GzoHucb3bMz9KZtF5bJtZlbRGh4ZbFaXQ'
+    const USER_JWT = ""
     const YOUR_CONVERSATION_ID = 'YOUR CONVERSATION ID'
-    const SECOND_USER_JWT =
-      'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MTk2OTk5MTksImp0aSI6IjJlNzdhODcwLTFiNjktMTFlOC1hYmVlLWZiYzViNmVjODgzOCIsInN1YiI6ImFubmEiLCJleHAiOiIxNTE5Nzg2MzE5IiwiYWNsIjp7InBhdGhzIjp7Ii92MS9zZXNzaW9ucy8qKiI6e30sIi92MS91c2Vycy8qKiI6e30sIi92MS9jb252ZXJzYXRpb25zLyoqIjp7fX19LCJhcHBsaWNhdGlvbl9pZCI6IjhhM2I0OWZjLWRkMWEtNDQwMi1hNmRlLWJkMTc0YTIxZjI4NCJ9.AKw-lGf6u9DGsfqCjPUhTVd0jc6MEec_fTnKP9TLXpdPQAVePPJ2wK8l3RClOsy3qUGwqfZo4EtrA4VLd_7FyMsXJLHhiMrR7WKW9nruaj020gbeZ_tZK5mFVQuUFYH2RvX2Vu8bmGyd26p2lyoJ7ScMA9_x6qXprNIC1Sk8JIIIGknFAlLI7F9n0GkIzdNp09LLpYIAGU8B43ECFYnE13lkhQJO-eBM1cteZQ-Gy8MrGCyTFlFsbpZpoWO8EZDub7ZF1Uvm32joiU8S_mRWqrOD3dCNKkW8NJ6fU-arETBhuYBdz-Z69Y9QDFwDgSo-ezPJFUGJC-1zEVcybnfehQ'
+    const SECOND_USER_JWT = ""
 
     class ChatApp {
       constructor() {
@@ -73,10 +71,10 @@
         this.conversationList = document.getElementById('conversations')
         this.leaveButton = document.getElementById('leave')
         this.audio = document.getElementById('audio')
-        this.enableButton = document.getElementById('enable')
-        this.disableButton = document.getElementById('disable')
         this.selfVideo = document.getElementById('self-video')
         this.conversationVideo = document.getElementById('conversation-video')
+        this.enableButton = document.getElementById('enable')
+        this.disableButton = document.getElementById('disable')
         this.enableVideoButton = document.getElementById('enable-video')
         this.disableVideoButton = document.getElementById('disable-video')
         this.setupUserEvents()
@@ -113,6 +111,10 @@
             const date = new Date(Date.parse(events[Object.keys(events)[i - 1]].timestamp))
             if (conversation.members[events[Object.keys(events)[i - 1]].from]) {
               switch (events[Object.keys(events)[i - 1]].type) {
+                case 'text:seen':
+                  break;
+                case 'text:delivered':
+                  break;
                 case 'text':
                   eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.text}</b><br>`
                   break;
@@ -159,7 +161,7 @@
           const text = `${sender.user.name} @ ${date}: <b>${message.body.text}</b><br>`
           this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
 
-          if (sender.name !== this.conversation.me.name) {
+          if (sender.user.name !== this.conversation.me.user.name) {
             message.seen().then(this.eventLogger('text:seen')).catch(this.errorLogger)
           }
         })
@@ -168,30 +170,20 @@
         conversation.on("member:left", this.memberEventHandler('left'))
         conversation.on("member:media", (member, event) => {
           console.log(`*** Member changed media state`, member, event)
+          var text
           if (event.body.audio !== undefined) {
-            const text = `${member.user.name} <b>${event.body.audio ? 'enabled' : 'disabled'} audio in the conversation</b><br>`
+            text = `${member.user.name} <b>${event.body.audio ? 'enabled' : 'disabled'} audio in the conversation</b><br>`
           } else {
-            const text = `${member.user.name} <b>${event.body.video ? 'enabled' : 'disabled'} video in the conversation</b><br>`
+            text = `${member.user.name} <b>${event.body.video ? 'enabled' : 'disabled'} video in the conversation</b><br>`
           }
           this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
         })
 
         this.showConversationHistory(conversation)
 
-        conversation.on("text:seen", (data, text) => console.log(`${data.name} saw text: ${text.body.text}`))
-        conversation.on("text:typing:off", data => console.log(`${data.name} stopped typing...`))
-        conversation.on("text:typing:on", data => console.log(`${data.name} started typing...`))
-
-        conversation.me.on("media:stream:on", (stream) => {
-          this.selfVideo.srcObject = stream
-        })
-
-        for (var i = Object.keys(conversation.members).length; i > 0; i--) {
-          conversation.members[Object.keys(conversation.members)[i - 1]].on("media:stream:on", (stream) => {
-            this.conversationVideo.srcObject = stream
-          })
-        }
-
+        conversation.on("text:seen", (data, text) => console.log(`${data.user.name} saw text: ${text.body.text}`))
+        conversation.on("text:typing:off", data => console.log(`${data.user.name} stopped typing...`))
+        conversation.on("text:typing:on", data => console.log(`${data.user.name} started typing...`))
       }
 
       updateConversationsList(conversations) {
@@ -216,12 +208,7 @@
       listConversations(userToken) {
 
         new ConversationClient({
-            debug: false,
-            iceServers: {
-              urls: 'turn:138.68.169.35:3478?transport=tcp',
-              credential: 'bar',
-              username: 'foo2'
-            }
+            debug: false
           })
           .login(userToken)
           .then(app => {
@@ -307,14 +294,11 @@
         })
 
         this.enableVideoButton.addEventListener('click', () => {
-          this.conversation.media.enable({
-            video: "both"
-          }).then(this.eventLogger('member:media')).catch(this.errorLogger)
+          this.conversation.media.enable({video: "both"}).then(this.eventLogger('member:media')).catch(this.errorLogger)
         })
+
         this.disableVideoButton.addEventListener('click', () => {
-          this.conversation.media.disable({
-            video: "both"
-          }).then(this.eventLogger('member:media')).catch(this.errorLogger)
+          this.conversation.media.disable({video: "both"}).then(this.eventLogger('member:media')).catch(this.errorLogger)
         })
       }
     }
