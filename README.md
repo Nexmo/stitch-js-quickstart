@@ -40,6 +40,7 @@ If you want communicate with us during the EA program you can:
 * [Inviting members](docs/2-inviting-members.md)
 * [Utilizing events](docs/3-utilizing-events.md)
 * [Enable audio](docs/4-enable-audio.md)
+* [Enable video](docs/5-enable-video.md)
 
 
 You can also find the completed examples in the [examples directory](examples).
