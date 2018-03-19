@@ -60,9 +60,7 @@ setupUserEvents() {
     }).then(this.eventLogger('member:media')).catch(this.errorLogger)
   })
   this.disableVideoButton.addEventListener('click', () => {
-    this.conversation.media.disable({
-      video: "both"
-    }).then(this.eventLogger('member:media')).catch(this.errorLogger)
+    this.conversation.media.disable().then(this.eventLogger('member:media')).catch(this.errorLogger)
   })
 }
 ```
