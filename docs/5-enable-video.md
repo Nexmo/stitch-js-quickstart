@@ -33,7 +33,6 @@ First, we'll add the UI for user to enable and disable video, as well as two `<v
   </div>
   ...
 </section>
-
 ```
 
 And add the buttons and `<video>` elements in the class constructor
@@ -50,7 +49,7 @@ constructor() {
 
 ### 1.2 - Add enable and disable video handler
 
-We'll then update the `setupUserEvents` method to trigger `conversation.media.enable({video: "both"})` when the user clicks the `Enable Video` button. We'll also add the corresponding `conversation.media.enable({video: "both"})` trigger for disabling the video stream.
+We'll then update the `setupUserEvents` method to trigger `conversation.media.enable({video: "both"})` when the user clicks the `Enable Video` button. We'll also add the corresponding `conversation.media.disable({video: "both"})` trigger for disabling the video stream.
 
 ```javascript
 setupUserEvents() {
@@ -68,22 +67,9 @@ setupUserEvents() {
 }
 ```
 
-### 1.3 - Add disable audio handler
+### 1.3 - Change member:media listener
 
-Next, we'll add the ability for a user to disable the audio stream as well. In order to do this, we'll update the `setupUserEvents` method to trigger `conversation.media.disable()` when the user clicks the `Disable Audio` button.
-
-```javascript
-setupUserEvents() {
-...
-  this.disableButton.addEventListener('click', () => {
-    this.conversation.media.disable().then(this.eventLogger('member:media')).catch(this.errorLogger)
-  })
-}
-```
-
-### 1.4 - Add member:media listener
-
-With these first parts we're sending `member:media` events into the conversation. Now we're going to register a listener for them as well that updates the `messageFeed`. In order to do that, we'll add a listener for `member:media` events at the end of the `setupConversationEvents` method
+We already have a listener for `member:media` events from the conversation dealing with audio events. Now we're going to change that listener to handle video events as well and update the `messageFeed`. In order to do that, we'll change the listener for `member:media` events at the end of the `setupConversationEvents` method
 
 ```javascript
 setupConversationEvents(conversation) {
@@ -91,14 +77,18 @@ setupConversationEvents(conversation) {
 
   conversation.on("member:media", (member, event) => {
     console.log(`*** Member changed media state`, member, event)
-    const text = `${member.user.name} <b>${event.body.audio ? 'enabled' : 'disabled'} audio in the conversation</b><br>`
-    this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
+    var text
+    if (event.body.audio !== undefined) {
+      text = `${member.user.name} <b>${event.body.audio ? 'enabled' : 'disabled'} audio in the conversation</b><br>`
+    } else {
+      text = `${member.user.name} <b>${event.body.video ? 'enabled' : 'disabled'} video in the conversation</b><br>`
+    }
   })
 
 }
 ```
 
-If we want the conversation history to be updated, we need to add a case for `member:media` in the `showConversationHistory` switch:
+If we want the conversation history to be updated accordingly, we need to update the case for `member:media` in the `showConversationHistory` switch:
 
 ```javascript
 showConversationHistory(conversation) {
@@ -106,13 +96,59 @@ showConversationHistory(conversation) {
   switch (events[Object.keys(events)[i - 1]].type) {
     ...
     case 'member:media':
-      eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.audio ? "enabled" : "disabled"} audio</b><br>`
+      if (events[Object.keys(events)[i - 1]].body.audio !== undefined) {
+        eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.audio
+          ? "enabled"
+          : "disabled"} audio</b><br>`
+      } else {
+        eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.video
+          ? "enabled"
+          : "disabled"} video</b><br>`
+      }
       break;
     ...
   }
 }
 ```
 
+### 1.4 - Add media:stream:on listeners
+
+With these first parts we're listening and reacting to `member:media` events that occur in the conversation. In order to get access to the video streams, we need to listen to `media:stream:on` events as well. These events don't fire on the Conversation though, they fire on a Member. Now we're going to register a listener on `conversation.me` in order to get our own video feed. Let's add the listener at the end of the `setupConversationEvents` method
+
+```javascript
+setupConversationEvents(conversation) {
+  ...
+
+  conversation.me.on("media:stream:on", (stream) => {
+    if ("srcObject" in this.selfVideo) {
+      this.selfVideo.srcObject = stream;
+    } else {
+      // Avoid using this in new browsers, as it is going away.
+      this.selfVideo.src = window.URL.createObjectURL(stream);
+    }
+  })
+
+}
+```
+
+In order to get the video from the other members of the conversation, we'll have to add a listener for each Member of the Conversation. We'll add the `media:stream:on` listener on `conversation.members` at the end of the `setupConversationEvents` method:
+
+```javascript
+setupConversationEvents(conversation) {
+  ...
+
+  for (var i = Object.keys(conversation.members).length; i > 0; i--) {
+    conversation.members[Object.keys(conversation.members)[i - 1]].on("media:stream:on", (stream) => {
+      if ("srcObject" in this.conversationVideo) {
+        this.conversationVideo.srcObject = stream;
+      } else {
+        // Avoid using this in new browsers, as it is going away.
+        this.conversationVideo.src = window.URL.createObjectURL(stream);
+      }
+    })
+  }
+}
+```
 
 ### 1.5 - Open the conversation in two browser windows
 
@@ -123,17 +159,3 @@ Thats's it! Your page should now look something like [this](https://github.com/N
 ## Where next?
 
 - Have a look at the [Nexmo Conversation JS SDK API Reference](https://developer.nexmo.com/sdk/stitch/javascript/)
-
-## ICE Servers
-If for some reason the WebRTC P2P connection doesn't work on your network, you need to overwrite the [ICE Servers](https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment) when you create you `ConversationClient` instance:
-
-```javascript
-new ConversationClient({
-  debug: false,
-  iceServers: {
-    urls: 'turn:138.68.169.35:3478?transport=tcp',
-    credential: 'bar',
-    username: 'foo2'
-  }
-})
-```

@@ -58,9 +58,9 @@
   </section>
 
   <script>
-    const USER_JWT = ""
+    const USER_JWT = "YOUR USER JWT"
     const YOUR_CONVERSATION_ID = 'YOUR CONVERSATION ID'
-    const SECOND_USER_JWT = ""
+    const SECOND_USER_JWT = "SECOND USER JWT"
 
     class ChatApp {
       constructor() {
@@ -92,7 +92,6 @@
 
       memberEventHandler(type) {
         return (member, event) => {
-          console.log(member, event);
           const date = new Date(Date.parse(event.timestamp))
           console.log(`*** ${member.user.name} ${type} the conversation`)
           const text = `${member.user.name} @ ${date}: <b>${type} the conversation</b><br>`
@@ -184,6 +183,26 @@
         conversation.on("text:seen", (data, text) => console.log(`${data.user.name} saw text: ${text.body.text}`))
         conversation.on("text:typing:off", data => console.log(`${data.user.name} stopped typing...`))
         conversation.on("text:typing:on", data => console.log(`${data.user.name} started typing...`))
+
+        conversation.me.on("media:stream:on", (stream) => {
+          if ("srcObject" in this.selfVideo) {
+            this.selfVideo.srcObject = stream;
+          } else {
+            // Avoid using this in new browsers, as it is going away.
+            this.selfVideo.src = window.URL.createObjectURL(stream);
+          }
+        })
+
+        for (var i = Object.keys(conversation.members).length; i > 0; i--) {
+          conversation.members[Object.keys(conversation.members)[i - 1]].on("media:stream:on", (stream) => {
+            if ("srcObject" in this.conversationVideo) {
+              this.conversationVideo.srcObject = stream;
+            } else {
+              // Avoid using this in new browsers, as it is going away.
+              this.conversationVideo.src = window.URL.createObjectURL(stream);
+            }
+          })
+        }
       }
 
       updateConversationsList(conversations) {
@@ -294,11 +313,15 @@
         })
 
         this.enableVideoButton.addEventListener('click', () => {
-          this.conversation.media.enable({video: "both"}).then(this.eventLogger('member:media')).catch(this.errorLogger)
+          this.conversation.media.enable({
+            video: "both"
+          }).then(this.eventLogger('member:media')).catch(this.errorLogger)
         })
 
         this.disableVideoButton.addEventListener('click', () => {
-          this.conversation.media.disable({video: "both"}).then(this.eventLogger('member:media')).catch(this.errorLogger)
+          this.conversation.media.disable({
+            video: "both"
+          }).then(this.eventLogger('member:media')).catch(this.errorLogger)
         })
       }
     }
