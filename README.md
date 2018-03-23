@@ -1,16 +1,16 @@
-# Nexmo Conversation SDK for JavaScript Beta
+# Nexmo Stitch SDK for JavaScript Quickstart
 
-This is the JavaScript SDK for Nexmo's Conversation API. Read more about:
+This is the JavaScript SDK for the Nexmo Stitch API. Read more about:
 
-- [The Conversation API](#about-the-conversation-api)
+- [The Stitch API](#about-the-stitch-api)
 - [Participating in the Early Adopter program](#participating-in-the-early-adopter-program)
 - [Trying out the quickstart examples](#try-out-the-quickstart-examples)
 - [Viewing the SDK API Reference docs](#sdk-api-reference-docs)
 - [Checking out the additional resources](#additional-resources)
 
-## About the Conversation API
+## About the Stitch API
 
-The Nexmo Conversation API enables you to build conversation features where communication can take place across multiple platforms. The context of the conversations is maintained though each communication event taking place within a conversation, no matter the medium.
+The Nexmo Stitch API enables you to build conversation features where communication can take place across multiple platforms. The context of the conversations is maintained though each communication event taking place within a conversation, no matter the medium.
 
 Currently the Conversation API offers basic IP messaging with the following features:
 
@@ -31,7 +31,7 @@ This first preview will focus on the IP messaging capabilities. During this exte
 If your team members require access to the docs or SDK repos contact [ea-support@nexmo.com](mailto:ea-support@nexmo.com).
 * Ask questions, provide feedback and report problems by [creating an issue](https://github.com/Nexmo/conversation-js-quickstart/issues/new)
 If you want communicate with us during the EA program you can:
-* Join the [Nexmo community slack](https://developer.nexmo.com/community/slack) and ask @chris, @laka, @eric.giannini or @leggetter for access to the private [#conversation-ea](https://nexmo-community.slack.com/messages/G5V788WHJ/) channel
+* Join the [Nexmo community slack](https://developer.nexmo.com/community/slack) and check out the [#stitch](https://nexmo-community.slack.com/messages/C9H152ATW) channel where you can ask  @chris, @laka, @eric.giannini or @leggetter for help.
 * Email [ea-support@nexmo.com](mailto:ea-support@nexmo.com) directly
 
 ## Run through the quickstart guides
@@ -40,13 +40,14 @@ If you want communicate with us during the EA program you can:
 * [Inviting members](docs/2-inviting-members.md)
 * [Utilizing events](docs/3-utilizing-events.md)
 * [Enable audio](docs/4-enable-audio.md)
+* [Enable video](docs/5-enable-video.md)
 
 
 You can also find the completed examples in the [examples directory](examples).
 
 ## SDK API Reference docs
 
-The [Nexmo Conversation JavaScript SDK API Reference docs](https://ea.developer.nexmo.com/sdk/conversation/javascript/) are available online. If you do not have access to the docs, please contact [ea-support@nexmo.com](mailto:ea-support@nexmo.com)
+The [Nexmo Stitch JavaScript SDK API Reference docs](https://developer.nexmo.com/sdk/stitch/javascript/) are available online. If you do not have access to the docs, please contact [ea-support@nexmo.com](mailto:ea-support@nexmo.com)
 
 ## Additional Resources
 
