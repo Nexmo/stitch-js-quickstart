@@ -94,14 +94,10 @@ showConversationHistory(conversation) {
   switch (events[Object.keys(events)[i - 1]].type) {
     ...
     case 'member:media':
-      if (events[Object.keys(events)[i - 1]].body.audio !== undefined) {
-        eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.audio
-          ? "enabled"
-          : "disabled"} audio</b><br>`
+      if (value.body.audio !== undefined) {
+        eventsHistory = `${conversation.members[value.from].user.name} @ ${date}: <b>${value.body.audio ? "enabled" : "disabled"} audio</b><br>` + eventsHistory
       } else {
-        eventsHistory += `${conversation.members[events[Object.keys(events)[i - 1]].from].user.name} @ ${date}: <b>${events[Object.keys(events)[i - 1]].body.video
-          ? "enabled"
-          : "disabled"} video</b><br>`
+        eventsHistory = `${conversation.members[value.from].user.name} @ ${date}: <b>${value.body.video ? "enabled" : "disabled"} video</b><br>` + eventsHistory
       }
       break;
     ...
