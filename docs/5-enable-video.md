@@ -91,7 +91,7 @@ If we want the conversation history to be updated accordingly, we need to update
 ```javascript
 showConversationHistory(conversation) {
   ...
-  switch (events[Object.keys(events)[i - 1]].type) {
+  switch (value.type) {
     ...
     case 'member:media':
       if (value.body.audio !== undefined) {
