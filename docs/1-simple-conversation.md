@@ -190,13 +190,13 @@ The UI contains:
 Install the Nexmo Conversation JS SDK
 
 ```bash
-$ npm install nexmo-conversation
+$ npm install nexmo-stitch
 ```
 
 Include the Conversation JS SDK in the `<head>`
 
 ```html
-<script src="./node_modules/nexmo-conversation/dist/conversationClient.js"></script>
+<script src="./node_modules/nexmo-stitch/dist/conversationClient.js"></script>
 ```
 
 ### 2.3 - Stubbed Out Login
