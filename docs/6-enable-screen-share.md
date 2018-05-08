@@ -36,7 +36,7 @@ We’ll have to create a manifest.json file, this file will contains the instruc
     "matches": ["*://localhost/*","https://*.my-dns.com/*"]
   },
   "background": {
-    "scripts": ["screen-capture.js"], 
+    "scripts": ["screen-capture.js"],
     "persistent": false
   }
 }
@@ -111,7 +111,7 @@ conversationClient = new ConversationClient({
   conversation.media.update({ screenshare: true});
   ```
 
-  This will enable screen share with all the screen share option allowed by Chrome (screen, window or tab). What happens with Firefox though?
+  This will enable screen share with all the screen share option allowed by Chrome (screen, window or tab).
 
   If you want to enable the screen share with only part of the option you can call enable and pass the option you want.
 
