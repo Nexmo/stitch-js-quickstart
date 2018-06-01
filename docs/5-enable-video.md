@@ -152,4 +152,4 @@ Thats's it! Your page should now look something like [this](https://github.com/N
 
 ## Where next?
 
-- Have a look at the [Nexmo Conversation JS SDK API Reference](https://developer.nexmo.com/sdk/stitch/javascript/)
+- Have a look at the [Nexmo Stitch JS SDK API Reference](https://developer.nexmo.com/sdk/stitch/javascript/)

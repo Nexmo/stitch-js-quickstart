@@ -21,7 +21,7 @@ In order to enable screen sharing into our application, we'll need to create a C
 
 ### 1.1 -  Creating the manifest file
 
-We’ll have to create a `manifest.json` file that contains the metadata on how the extentsion behaves and Chrome will interpret. We’ll have to fill a few of the non-mandatory fields, making it externally connectable and dealing with permissions in order to capture either desktop, screen or tab. We'll also tell the extension to use the file `screen-capture.js` for the code. The manifest file should look like this:
+We’ll have to create a `manifest.json` file that contains the metadata on how the extension behaves and Chrome will interpret. We’ll have to fill a few of the non-mandatory fields, making it externally connectable and dealing with permissions in order to capture either desktop, screen or tab. We'll also tell the extension to use the file `screen-capture.js` for the code. The manifest file should look like this:
 
 ``` json
 {
@@ -141,5 +141,5 @@ Thats's it! Your page should now look something like [this](https://github.com/N
 
 ## Where next?
 
-- Have a look at the [Nexmo Conversation JS SDK API Reference](https://developer.nexmo.com/sdk/stitch/javascript/)
+- Have a look at the [Nexmo Stitch JS SDK API Reference](https://developer.nexmo.com/sdk/stitch/javascript/)
 - Have a look at the documentation about [creating](https://developer.chrome.com/extensions/getstarted) and [publishing](https://developer.chrome.com/webstore/publish) Chrome extensions
