@@ -115,10 +115,10 @@ setupConversationEvents(conversation) {
 
   conversation.me.on("media:stream:on", (stream) => {
     if ("srcObject" in this.selfVideo) {
-      this.selfVideo.srcObject = stream;
+      this.selfVideo.srcObject = stream.localStream;
     } else {
       // Avoid using this in new browsers, as it is going away.
-      this.selfVideo.src = window.URL.createObjectURL(stream);
+      this.selfVideo.src = window.URL.createObjectURL(stream.localStream);
     }
   })
 
@@ -134,10 +134,10 @@ setupConversationEvents(conversation) {
   for (var i = Object.keys(conversation.members).length; i > 0; i--) {
     conversation.members[Object.keys(conversation.members)[i - 1]].on("media:stream:on", (stream) => {
       if ("srcObject" in this.conversationVideo) {
-        this.conversationVideo.srcObject = stream;
+        this.conversationVideo.srcObject = stream.localStream;
       } else {
         // Avoid using this in new browsers, as it is going away.
-        this.conversationVideo.src = window.URL.createObjectURL(stream);
+        this.conversationVideo.src = window.URL.createObjectURL(stream.localStream);
       }
     })
   }
