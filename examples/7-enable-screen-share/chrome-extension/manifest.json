@@ -1,0 +1,19 @@
+{
+  "name": "Stitch Screen Share Helper",
+  "description": "Allows you to capture your desktop for use in video applications",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "permissions": [
+    "desktopCapture",
+    "activeTab",
+    "tabs",
+    "http://*/*", "https://*/*"
+  ],
+  "externally_connectable": {
+    "matches": ["*://localhost/*", "https://*.my-dns.com/*"]
+  },
+  "background": {
+    "scripts": ["screen-capture.js"],
+    "persistent": false
+  }
+}

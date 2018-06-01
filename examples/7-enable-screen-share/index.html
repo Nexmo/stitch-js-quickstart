@@ -38,6 +38,7 @@
     <button id="leave">Leave Conversation</button>
     <div>
       <button id="enable-video">Enable Video</button>
+      <button id="enable-screenshare">Enable Screen Share</button>
       <button id="disable-video">Disable Video</button>
     </div>
     <div>
@@ -59,7 +60,7 @@
 
   <script>
     const USER_JWT = "YOUR USER JWT"
-    const YOUR_CONVERSATION_ID = 'YOUR CONVERSATION ID'
+    const YOUR_EXTENSION_ID = 'YOUR EXTENSION ID'
     const SECOND_USER_JWT = "SECOND USER JWT"
 
     class ChatApp {
@@ -76,6 +77,7 @@
         this.enableButton = document.getElementById('enable')
         this.disableButton = document.getElementById('disable')
         this.enableVideoButton = document.getElementById('enable-video')
+        this.enableScreenShareButton = document.getElementById('enable-screenshare')
         this.disableVideoButton = document.getElementById('disable-video')
         this.setupUserEvents()
       }
@@ -227,7 +229,8 @@
       listConversations(userToken) {
 
         new ConversationClient({
-            debug: false
+            debug: false,
+            screenshareExtensionId: YOUR_EXTENSION_ID
           })
           .login(userToken)
           .then(app => {
@@ -315,6 +318,12 @@
         this.enableVideoButton.addEventListener('click', () => {
           this.conversation.media.enable({
             video: "both"
+          }).then(this.eventLogger('member:media')).catch(this.errorLogger)
+        })
+
+        this.enableScreenShareButton.addEventListener('click', () => {
+          this.conversation.media.update({
+            screenshare: true
           }).then(this.eventLogger('member:media')).catch(this.errorLogger)
         })
 
