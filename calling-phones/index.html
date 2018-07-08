@@ -16,7 +16,7 @@
       display: none
     }
 
-    #call-controls {
+    #call-incoming, #call-members {
       display: none
     }
   </style>
@@ -60,16 +60,21 @@
       <input type="text" name="phonenumber" value="">
       <input type="submit" value="Call" />
     </form>
-    <div id="call-controls">
-      <span id="call-members">You are in a call with </span><button id="hang-up">Hang Up</button>
+    <div>
+      <div id="call-incoming">
+        <p></p><button id="yes">Yes</button><button id="no">No</button>
+      </div>
+      <div id="call-members">
+        <p></p><button id="hang-up">Hang Up</button>
+      </div>
     </div>
     <h1>Conversations</h1>
   </section>
 
   <script>
-    const USER_JWT = 'YOUR USER JWT'
+    const USER_JWT = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1Mjk1MzE5OTQsImp0aSI6IjQzOWExZTcwLTc0ZDUtMTFlOC04M2M0LTVkODk4YjkxZTQ3MiIsInN1YiI6ImphbWllIiwiZXhwIjoxNTI5NjE4Mzk0LCJhY2wiOnsicGF0aHMiOnsiL3YxL3Nlc3Npb25zLyoqIjp7fSwiL3YxL3VzZXJzLyoqIjp7fSwiL3YxL2NvbnZlcnNhdGlvbnMvKioiOnt9LCIvdjEva25vY2tpbmcvKioiOnt9fX0sImFwcGxpY2F0aW9uX2lkIjoiOTg5MjNhNDYtMGYwNS00N2U2LTlmZTQtODI3Y2I1OWZiOGU0In0.YSSY1Rce78oOaDjA_hvGzILcwLThS_5Sqin88mLQSvtoVNN89S2kGEYGDyJwtxt-ivCr_0ZDuTFuvng4vBg8cO8AVc8WGH1lCxHXKpcmroIfJ94mYk6h9Kdb5qxDm1kInu3TTKVcnuU7cWCyeRS-zTeMuz0HWHSjc90nOCb2OXqhjxpWCDi0mDi3XSVwaEY-ti4w4lkED-Ud_N88N6KW4YoDrzh5NvtixTUSxPc-uSZYRy1_PNAQ_pJNkJ8Z8EqGcn1F4p7bfnsA-7qiBlGQpMMPWWjT5DSTYzwiyOZOCXvDQpl_IrxAPKOZcmWzc1BWJh3bcnXq6fZookyWTnF4yA'
     const YOUR_CONVERSATION_ID = 'YOUR CONVERSATION ID'
-    const SECOND_USER_JWT = 'SECOND USER JWT'
+    const SECOND_USER_JWT = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1Mjk1MzE5MjksImp0aSI6IjFkMTQ1ZDEwLTc0ZDUtMTFlOC04N2ZmLWIxMmNmYWJhMmE2NCIsInN1YiI6ImFsaWNlIiwiZXhwIjoxNTI5NjE4MzI5LCJhY2wiOnsicGF0aHMiOnsiL3YxL3Nlc3Npb25zLyoqIjp7fSwiL3YxL3VzZXJzLyoqIjp7fSwiL3YxL2NvbnZlcnNhdGlvbnMvKioiOnt9LCIvdjEva25vY2tpbmcvKioiOnt9fX0sImFwcGxpY2F0aW9uX2lkIjoiOTg5MjNhNDYtMGYwNS00N2U2LTlmZTQtODI3Y2I1OWZiOGU0In0.EPBToF5yMDpy6LxEeYDUFpgzEvff7oWYZWXBnngCSZKd3EgeqiDfosl3V7UeV8xjKzDDLKSWiFr3jJzDsQFntj9phagzBk4N5WRw_E1KoydxcvKLD3_7icNPqu_I3zU3PZenp2DcaETtDl6RCXAzHeJILbqxLFrc-lk8_hQOYqu6j-XBuNcSUWUn4xuP0_s2BiDcCA7DeT3-iMyx6dronuez3w2_jAzLpM41-9bjSB7UqfYHwVIGs6UMSbX7p6TwW5Z5fw2MCu0vPyZVSlRuM0z3s6nZO5vJKfp7nR6VwcosdAZPQa8p0CGakKzdI1IzQ308tAA_CTgMOD0I1qgsUA'
 
     class ChatApp {
       constructor() {
@@ -84,9 +89,12 @@
         this.disableButton = document.getElementById('disable')
         this.callForm = document.getElementById('call-form')
         this.callPhoneForm = document.getElementById('call-phone-form')
-        this.callControls = document.getElementById('call-controls')
-        this.hangUpButton = document.getElementById('hang-up')
+
+        this.callIncoming = document.getElementById('call-incoming')
         this.callMembers = document.getElementById('call-members')
+        this.callYes = document.getElementById('yes')
+        this.callNo = document.getElementById('no')
+        this.hangUpButton = document.getElementById('hang-up')
         this.setupUserEvents()
       }
 
@@ -218,21 +226,15 @@
         }
       }
 
-      showCallControls(member) {
-        this.callControls.style.display = "block"
-        this.callMembers.textContent = this.callMembers.textContent + " " + member.invited_by || member.user.name
+      showCallIncoming(member) {
+        this.callIncoming.style.display = "block"
+        this.callIncoming.children[0].textContent = "Incoming call from " + member.user.name + ". Do you want to answer?"
       }
 
-      handleCall(call) {
-        this.setupAudioStream(call.application.activeStream.stream)
-        this.call = call
-
-        call.on("call:member:state", (from, state, event) => {
-          if (state = "ANSWERED") {
-            this.showCallControls(from)
-          }
-          console.log("member: " + from.user.name + " has " + state);
-        });
+      showCallMembers(member) {
+        this.callMembers.style.display = "block"
+        this.callIncoming.style.display = "none"
+        this.callMembers.children[0].textContent = "You are in a call with " + member.user.name
       }
 
       listConversations(userToken) {
@@ -246,15 +248,9 @@
             this.app = app
 
             app.on("member:call", (member, call) => {
-              if (window.confirm(`Incoming call from ${member.user.name}. Do you want to answer?`)) {
-                this.call = call
-                call.answer().then((stream) => {
-                  this.setupAudioStream(stream)
-                  this.showCallControls(member)
-                })
-              } else {
-                call.hangUp()
-              }
+              this.call = call
+              console.log("member:call - ", call);
+              this.showCallIncoming(member)
             })
 
             app.on("member:invited", (member, event) => {
@@ -306,7 +302,15 @@
           event.preventDefault()
           var usernames = this.callForm.children.username.value.split(",").map(username => username.trim())
 
-          this.app.call(usernames).then(this.handleCall);
+          this.app.call(usernames).then(call => {
+            this.setupAudioStream(call.application.activeStream.stream)
+            call.on("call:state:changed", (call) => {
+              if(call.state == call.CALL_STATES.STARTED) {
+                this.showCallMembers(call.from)
+              }
+              console.log("call:state:changed - ", call)
+            })
+          });
 
         })
 
@@ -314,13 +318,24 @@
           event.preventDefault()
 
           this.app.callPhone(this.callPhoneForm.children.phonenumber.value)
-            .then(this.handleCall)
         })
 
         this.hangUpButton.addEventListener('click', () => {
           this.call.hangUp()
-          this.callControls.style.display = "none"
+          this.callMembers.style.display = "none"
         })
+
+        this.callYes.addEventListener('click', () => {
+          this.call.answer()
+          this.showCallMembers(this.call.from)
+        })
+
+        this.callNo.addEventListener('click', () => {
+          this.call.hangUp()
+          this.callIncoming.style.display = "none"
+        })
+
+
 
 
         this.messageTextarea.addEventListener('focus', () => {
