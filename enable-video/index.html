@@ -199,15 +199,14 @@
         for (var i = Object.keys(conversation.members).length; i > 0; i--) {
           if (conversation.members[Object.keys(conversation.members)[i - 1]].user.name != conversation.me.user.name) {
             conversation.members[Object.keys(conversation.members)[i - 1]].on("media:stream:on", (stream) => {
-                if ("srcObject" in this.conversationVideo) {
-                  this.conversationVideo.srcObject = stream.stream;
-                } else {
-                  // Avoid using this in new browsers, as it is going away.
-                  this.conversationVideo.src = window.URL.createObjectURL(stream.stream);
-                }
+              if ("srcObject" in this.conversationVideo) {
+                this.conversationVideo.srcObject = stream.stream;
+              } else {
+                // Avoid using this in new browsers, as it is going away.
+                this.conversationVideo.src = window.URL.createObjectURL(stream.stream);
               }
-            )
-            }
+            })
+          }
         }
       }
 
