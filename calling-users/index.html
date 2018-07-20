@@ -5,7 +5,7 @@
   <style>
     #login,
     #messages {
-      width: 80% height: 300px
+      width: 80% ; height: 300px;
     }
 
     #messages {
@@ -226,7 +226,6 @@
         } else {
           memberName = member.user.name
         }
-        console.log("shit");
         this.callIncoming.style.display = "block"
         this.callIncoming.children[0].textContent = "Incoming call from " + memberName + ". Do you want to answer?"
       }
@@ -318,7 +317,7 @@
           event.preventDefault()
           var usernames = this.callForm.children.username.value.split(",").map(username => username.trim())
 
-          this.app.call(usernames)
+          this.app.call(usernames);
         })
 
         this.hangUpButton.addEventListener('click', () => {
@@ -350,7 +349,17 @@
         this.enableButton.addEventListener('click', () => {
 
           this.conversation.media.enable().then(stream => {
-            this.setupAudioStream(stream)
+            // Older browsers may not have srcObject
+            if ("srcObject" in this.audio) {
+              this.audio.srcObject = stream;
+            } else {
+              // Avoid using this in new browsers, as it is going away.
+              this.audio.src = window.URL.createObjectURL(stream);
+            }
+
+            this.audio.onloadedmetadata = () => {
+              this.audio.play();
+            }
 
             this.eventLogger('member:media')()
           }).catch(this.errorLogger)
