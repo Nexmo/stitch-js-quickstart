@@ -72,9 +72,9 @@
   </section>
 
   <script>
-    const USER_JWT = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1Mjk1MzE5OTQsImp0aSI6IjQzOWExZTcwLTc0ZDUtMTFlOC04M2M0LTVkODk4YjkxZTQ3MiIsInN1YiI6ImphbWllIiwiZXhwIjoxNTI5NjE4Mzk0LCJhY2wiOnsicGF0aHMiOnsiL3YxL3Nlc3Npb25zLyoqIjp7fSwiL3YxL3VzZXJzLyoqIjp7fSwiL3YxL2NvbnZlcnNhdGlvbnMvKioiOnt9LCIvdjEva25vY2tpbmcvKioiOnt9fX0sImFwcGxpY2F0aW9uX2lkIjoiOTg5MjNhNDYtMGYwNS00N2U2LTlmZTQtODI3Y2I1OWZiOGU0In0.YSSY1Rce78oOaDjA_hvGzILcwLThS_5Sqin88mLQSvtoVNN89S2kGEYGDyJwtxt-ivCr_0ZDuTFuvng4vBg8cO8AVc8WGH1lCxHXKpcmroIfJ94mYk6h9Kdb5qxDm1kInu3TTKVcnuU7cWCyeRS-zTeMuz0HWHSjc90nOCb2OXqhjxpWCDi0mDi3XSVwaEY-ti4w4lkED-Ud_N88N6KW4YoDrzh5NvtixTUSxPc-uSZYRy1_PNAQ_pJNkJ8Z8EqGcn1F4p7bfnsA-7qiBlGQpMMPWWjT5DSTYzwiyOZOCXvDQpl_IrxAPKOZcmWzc1BWJh3bcnXq6fZookyWTnF4yA'
+    const USER_JWT = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MzIxMDgwNzYsImp0aSI6IjJjMTcxZDkwLThjNDMtMTFlOC05OWMwLWUzZjdkNjNhZjRiNCIsInN1YiI6ImphbWllIiwiZXhwIjoxNTMyMTk0NDc2LCJhY2wiOnsicGF0aHMiOnsiL3YxL3VzZXJzLyoqIjp7fSwiL3YxL2NvbnZlcnNhdGlvbnMvKioiOnt9LCIvdjEvc2Vzc2lvbnMvKioiOnt9LCIvdjEvZGV2aWNlcy8qKiI6e30sIi92MS9pbWFnZS8qKiI6e30sIi92My9tZWRpYS8qKiI6e30sIi92MS9hcHBsaWNhdGlvbnMvKioiOnt9LCIvdjEvcHVzaC8qKiI6e30sIi92MS9rbm9ja2luZy8qKiI6e319fSwiYXBwbGljYXRpb25faWQiOiI3MjcxZjU0ZS0xZWRhLTQ0MDUtOWNjOC05ZTJkY2U1NjY1NzAifQ.E6IFooH-t-O5UsTZ3S2UdLzcPuqnuH6jJcGu4wjHT6noDwpzTR8KkILI5ihXVNRTqbI_vuXxdyHEwHi4fzwwY6oxI9BEAZ73g2XKcO8yU_JoZzGadXBuzF7zVUa8QqjUK582gfbJTfv3BKToShUbgRl2dzz8GcoO969qnO62UeacnWaa6K9BtN2lGVwq5FVKFRY9vN3HE0pCnn7NCqyPVED0hVoG6SfPoiywETVIfcJWWXgDhIn7-UOIIKwTk7lRd8qFDR1ql5uw48W6JKZ3Pqi8_mMBbjL1ZT2LhOJbNuXrAwLJKfXntYKaDBB-9X1vlSVh4ZHGvl6gSknNX4NHqA'
     const YOUR_CONVERSATION_ID = 'YOUR CONVERSATION ID'
-    const SECOND_USER_JWT = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1Mjk1MzE5MjksImp0aSI6IjFkMTQ1ZDEwLTc0ZDUtMTFlOC04N2ZmLWIxMmNmYWJhMmE2NCIsInN1YiI6ImFsaWNlIiwiZXhwIjoxNTI5NjE4MzI5LCJhY2wiOnsicGF0aHMiOnsiL3YxL3Nlc3Npb25zLyoqIjp7fSwiL3YxL3VzZXJzLyoqIjp7fSwiL3YxL2NvbnZlcnNhdGlvbnMvKioiOnt9LCIvdjEva25vY2tpbmcvKioiOnt9fX0sImFwcGxpY2F0aW9uX2lkIjoiOTg5MjNhNDYtMGYwNS00N2U2LTlmZTQtODI3Y2I1OWZiOGU0In0.EPBToF5yMDpy6LxEeYDUFpgzEvff7oWYZWXBnngCSZKd3EgeqiDfosl3V7UeV8xjKzDDLKSWiFr3jJzDsQFntj9phagzBk4N5WRw_E1KoydxcvKLD3_7icNPqu_I3zU3PZenp2DcaETtDl6RCXAzHeJILbqxLFrc-lk8_hQOYqu6j-XBuNcSUWUn4xuP0_s2BiDcCA7DeT3-iMyx6dronuez3w2_jAzLpM41-9bjSB7UqfYHwVIGs6UMSbX7p6TwW5Z5fw2MCu0vPyZVSlRuM0z3s6nZO5vJKfp7nR6VwcosdAZPQa8p0CGakKzdI1IzQ308tAA_CTgMOD0I1qgsUA'
+    const SECOND_USER_JWT = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MzIxMDgxMTcsImp0aSI6IjQ0NjE4N2EwLThjNDMtMTFlOC1hMWNiLWNiNjYyYWU1YThmNyIsInN1YiI6ImFsaWNlIiwiZXhwIjoxNTMyMTk0NTE2LCJhY2wiOnsicGF0aHMiOnsiL3YxL3VzZXJzLyoqIjp7fSwiL3YxL2NvbnZlcnNhdGlvbnMvKioiOnt9LCIvdjEvc2Vzc2lvbnMvKioiOnt9LCIvdjEvZGV2aWNlcy8qKiI6e30sIi92MS9pbWFnZS8qKiI6e30sIi92My9tZWRpYS8qKiI6e30sIi92MS9hcHBsaWNhdGlvbnMvKioiOnt9LCIvdjEvcHVzaC8qKiI6e30sIi92MS9rbm9ja2luZy8qKiI6e319fSwiYXBwbGljYXRpb25faWQiOiI3MjcxZjU0ZS0xZWRhLTQ0MDUtOWNjOC05ZTJkY2U1NjY1NzAifQ.hBneEiHsx3kc20neltdXhgEaGPXYrDJq7AiYPAnxk5QSvHt2LopzbWv05j-O8gxt8BmJgpACny2B2T_q30Hwy09Rue8HzXW-VSXLcqPImiS3z-8VqwKosOAFRdRu09Xm6It_5goOEWQaMjWY0h1kNHe6U94rZeGwqoFs2ZrhYHLocO6pNhS-8SYKd_KPE7htiVyO1bSHjxyCCscwT40L3DhDFlDXnigsJvxsYh8hoUwTR25n5OpwlRccHvLYNQlWJ65_6VFBZXEIy2o0SCIDXQg1-3-3IwiZL3nAPFllqAWwgKb8S6P-guH9MrwnolVCoRjZWZoidIhI2MHL7elSug'
 
     class ChatApp {
       constructor() {
@@ -227,14 +227,27 @@
       }
 
       showCallIncoming(member) {
+        var memberName
+        if (member == "unknown") {
+          memberName = "a phone"
+        } else {
+          memberName = member.user.name
+        }
+        console.log("shit");
         this.callIncoming.style.display = "block"
-        this.callIncoming.children[0].textContent = "Incoming call from " + member.user.name + ". Do you want to answer?"
+        this.callIncoming.children[0].textContent = "Incoming call from " + memberName + ". Do you want to answer?"
       }
 
       showCallMembers(member) {
+        var memberName
+        if (member == "unknown") {
+          memberName = "a phone"
+        } else {
+          memberName = member.user.name
+        }
         this.callMembers.style.display = "block"
         this.callIncoming.style.display = "none"
-        this.callMembers.children[0].textContent = "You are in a call with " + member.user.name
+        this.callMembers.children[0].textContent = "You are in a call with " + memberName
       }
 
       listConversations(userToken) {
@@ -250,25 +263,35 @@
             app.on("member:call", (member, call) => {
               this.call = call
               console.log("member:call - ", call);
-              this.showCallIncoming(member)
+              if ((this.call.from != "unknown") && (this.app.me.name != this.call.from.user.name)) {
+                this.showCallIncoming(call.from)
+              } else {
+                this.showCallMembers("unknown")
+              }
+            })
+
+            app.on("call:status:changed", (call) => {
+              console.log("call:status:changed - ", call.status)
             })
 
             app.on("member:invited", (member, event) => {
-              //identify the sender.
-              console.log("*** Invitation received:", event);
+              //identify the sender and type of conversation.
+              if (event.body.cname.indexOf("CALL") != 0 && event.invited_by) {
+                console.log("*** Invitation received:", event);
 
-              //accept an invitation.
-              app.getConversation(event.cid || event.body.cname)
-                .then((conversation) => {
-                  this.conversation = conversation
-                  conversation.join().then(() => {
-                    var conversationDictionary = {}
-                    conversationDictionary[this.conversation.id] = this.conversation
-                    this.updateConversationsList(conversationDictionary)
-                  }).catch(this.errorLogger)
+                //accept an invitation.
+                app.getConversation(event.cid || event.body.cname)
+                  .then((conversation) => {
+                    this.conversation = conversation
+                    conversation.join().then(() => {
+                      var conversationDictionary = {}
+                      conversationDictionary[this.conversation.id] = this.conversation
+                      this.updateConversationsList(conversationDictionary)
+                    }).catch(this.errorLogger)
 
-                })
-                .catch(this.errorLogger)
+                  })
+                  .catch(this.errorLogger)
+              }
             })
             return app.getConversations()
           })
@@ -302,15 +325,7 @@
           event.preventDefault()
           var usernames = this.callForm.children.username.value.split(",").map(username => username.trim())
 
-          this.app.call(usernames).then(call => {
-            this.setupAudioStream(call.application.activeStream.stream)
-            call.on("call:state:changed", (call) => {
-              if(call.state == call.CALL_STATES.STARTED) {
-                this.showCallMembers(call.from)
-              }
-              console.log("call:state:changed - ", call)
-            })
-          });
+          this.app.call(usernames);
 
         })
 
