@@ -59,11 +59,9 @@
   </section>
 
   <script>
-    const USER_JWT =
-      "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MzA2NTE2MjUsImp0aSI6IjFiYjQyZTMwLTdmMDQtMTFlOC1hN2M3LThiYzY4MDFjNGI1OCIsInN1YiI6ImphbWllIiwiZXhwIjoxNTMwNzM4MDI1LCJhY2wiOnsicGF0aHMiOnsiL3YxL3VzZXJzLyoqIjp7fSwiL3YxL2NvbnZlcnNhdGlvbnMvKioiOnt9LCIvdjEvc2Vzc2lvbnMvKioiOnt9LCIvdjEvZGV2aWNlcy8qKiI6e30sIi92MS9pbWFnZS8qKiI6e30sIi92My9tZWRpYS8qKiI6e30sIi92MS9hcHBsaWNhdGlvbnMvKioiOnt9LCIvdjEvcHVzaC8qKiI6e30sIi92MS9rbm9ja2luZy8qKiI6e319fSwiYXBwbGljYXRpb25faWQiOiIwMWUxYjM0OC0zNjkxLTQyMTYtYjQwNC04NTBlM2UwMDZmZWQifQ.B9qZt1aKy3_lq4dp3gfNtCXF0lJco0CaULd6fxDGYbhKUlHaufYxlPuUD1hlYwkHvrFap6UxzCwIYXq8IrP4Nx9omy6Fhbp-OrXRaT4cjsdSKmgn9fwmZUfLahZ1QVxDxKPx-O0nv4hIx7-uGcBt8T3vDXNMHtkjOCFurfRQvg2miHJov9eCUaWdGYJDCTEpMESppuGQoNJkPBNdmtO4EqNRZMw_SvKwqDZi5Kvs1gwewXZMgnHTYS6AivQmuj6QHoLngBYGjyT_i8PMgeJGNYPGf2Y-vTH_0LMIOSSqABPYJuelEo_caRhDyakgQzZ4aQ-SaPBMtx7L-nQiHDMuDg"
+    const USER_JWT = "YOUR USER JWT"
     const YOUR_CONVERSATION_ID = 'YOUR CONVERSATION ID'
-    const SECOND_USER_JWT =
-      "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MzA2NTE2NzcsImp0aSI6IjNhYThhZTEwLTdmMDQtMTFlOC1iNzI3LWQ1ODBiODA4NDE2YyIsInN1YiI6ImFsaWNlIiwiZXhwIjoxNTMwNzM4MDc3LCJhY2wiOnsicGF0aHMiOnsiL3YxL3VzZXJzLyoqIjp7fSwiL3YxL2NvbnZlcnNhdGlvbnMvKioiOnt9LCIvdjEvc2Vzc2lvbnMvKioiOnt9LCIvdjEvZGV2aWNlcy8qKiI6e30sIi92MS9pbWFnZS8qKiI6e30sIi92My9tZWRpYS8qKiI6e30sIi92MS9hcHBsaWNhdGlvbnMvKioiOnt9LCIvdjEvcHVzaC8qKiI6e30sIi92MS9rbm9ja2luZy8qKiI6e319fSwiYXBwbGljYXRpb25faWQiOiIwMWUxYjM0OC0zNjkxLTQyMTYtYjQwNC04NTBlM2UwMDZmZWQifQ.dRcSI_MSN96IKAKDZ_1e__HsPzFkaBhRtkpPwwH7ru-NKMeDTgfWMhXpcxhGD2RS_0igEt-DFY_fGLVdA_uvymQHNLXIo3aNiaolTzZ8FZdczISsfUm0nNfZqzAiEMZPkuNorg313cOS7I3dXZ7GUjljz70ds-TccdsjMGywhcWB8kKo4OO6dKTx1WaJEjhrc9OV4_cfvdnmRI3LR2RBHrAD5JLmVp6XQuvpFHj33eUCNwEiXsf3l8IHvDxbE8Nergzcgcj2S8r27PlGv_2y3o6L0jk20uWV0uYOjUAZDNWFZEYiIMzC0iAvAq2jUOP_sQKkBfjGAOaQOPqKQe9wCg"
+    const SECOND_USER_JWT = "SECOND USER JWT"
 
     class ChatApp {
       constructor() {
@@ -181,7 +179,7 @@
           this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
         })
 
-        //this.showConversationHistory(conversation)
+        this.showConversationHistory(conversation)
 
         conversation.on("text:seen", (data, text) => console.log(`${data.user.name} saw text: ${text.body.text}`))
         conversation.on("text:typing:off", data => console.log(`${data.user.name} stopped typing...`))
