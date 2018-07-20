@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <style>
+    #login,
+    #messages {
+      width: 80% ; height: 300px;
+    }
+
+    #messages {
+      display: none
+    }
+
+    #conversations {
+      display: none
+    }
+  </style>
+  <script src="./node_modules/nexmo-stitch/dist/conversationClient.js"></script>
+</head>
+
+<body>
+
+  <form id="login">
+    <h1>Login</h1>
+    <input type="text" name="username" value="">
+    <input type="submit" value="Login" />
+  </form>
+
+  <section id="messages">
+    <h1>Messages</h1>
+
+    <div id="messageFeed"></div>
+
+    <textarea id="messageTextarea"></textarea>
+    <br>
+    <button id="send">Send</button>
+  </section>
+
+  <section id="conversations">
+    <h1>Conversations</h1>
+  </section>
+
+  <script>
+    const USER_JWT = 'YOUR USER JWT'
+    const YOUR_CONVERSATION_ID = 'YOUR CONVERSATION ID'
+    const SECOND_USER_JWT = 'SECOND USER JWT'
+
+    class ChatApp {
+      constructor() {
+        this.messageTextarea = document.getElementById('messageTextarea')
+        this.messageFeed = document.getElementById('messageFeed')
+        this.sendButton = document.getElementById('send')
+        this.loginForm = document.getElementById('login')
+        this.conversationList = document.getElementById('conversations')
+        this.setupUserEvents()
+      }
+
+      errorLogger(error) {
+        console.log(error)
+      }
+
+      eventLogger(event) {
+        return () => {
+          console.log("'%s' event was sent", event)
+        }
+      }
+
+      authenticate(username) {
+        return username.toLowerCase() === "jamie" ? USER_JWT : SECOND_USER_JWT
+      }
+
+      setupConversationEvents(conversation) {
+        this.conversation = conversation
+        this.conversationList.style.display = 'none'
+        document.getElementById("messages").style.display = "block"
+        console.log('*** Conversation Retrieved', conversation)
+        console.log('*** Conversation Member', conversation.me)
+
+        // Bind to events on the conversation
+        conversation.on('text', (sender, message) => {
+          console.log('*** Message received', sender, message)
+          const date = new Date(Date.parse(message.timestamp))
+          const text = `${sender.user.name} @ ${date}: <b>${message.body.text}</b><br>`
+          this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
+        })
+
+        conversation.on("member:joined", (member, event) => {
+          const date = new Date(Date.parse(event.timestamp))
+          console.log(`*** ${member.user.name} joined the conversation`)
+          const text = `${member.user.name} @ ${date}: <b>joined the conversation</b><br>`
+          this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
+        })
+      }
+
+      updateConversationsList(conversations) {
+        let conversationsElement = document.createElement("ul")
+        for (let id in conversations) {
+          let conversationElement = document.createElement("li")
+          conversationElement.textContent = conversations[id].display_name
+          conversationElement.addEventListener("click", () => this.setupConversationEvents(conversations[id]))
+          conversationsElement.appendChild(conversationElement)
+        }
+
+        if (!conversationsElement.childNodes.length) {
+          conversationsElement.textContent = "You are not a member of any conversations"
+        }
+
+        this.conversationList.appendChild(conversationsElement)
+        this.conversationList.style.display = 'block'
+        this.loginForm.style.display = 'none'
+      }
+
+
+      listConversations(userToken) {
+
+        new ConversationClient({
+            debug: false
+          })
+          .login(userToken)
+          .then(app => {
+            console.log('*** Logged into app', app)
+
+            app.on("member:invited", (member, event) => {
+              //identify the sender and type of conversation.
+              if (event.body.cname.indexOf("CALL") != 0 && event.invited_by) {
+                console.log("*** Invitation received:", event);
+
+                //accept an invitation.
+                app.getConversation(event.cid || event.body.cname)
+                  .then((conversation) => {
+                    this.conversation = conversation
+                    conversation.join().then(() => {
+                      var conversationDictionary = {}
+                      conversationDictionary[this.conversation.id] = this.conversation
+                      this.updateConversationsList(conversationDictionary)
+                    }).catch(this.errorLogger)
+
+                  })
+                  .catch(this.errorLogger)
+              }
+            })
+            return app.getConversations()
+          })
+          .then((conversations) => {
+            console.log('*** Retrieved conversations', conversations)
+
+            this.updateConversationsList(conversations)
+
+          })
+          .catch(this.errorLogger)
+      }
+
+      setupUserEvents() {
+        this.sendButton.addEventListener('click', () => {
+          this.conversation.sendText(this.messageTextarea.value).then(() => {
+            this.eventLogger('text')()
+            this.messageTextarea.value = ''
+          }).catch(this.errorLogger)
+
+        })
+
+        this.loginForm.addEventListener('submit', (event) => {
+          event.preventDefault()
+          const userToken = this.authenticate(this.loginForm.children.username.value)
+          if (userToken) {
+            this.listConversations(userToken)
+          }
+        })
+      }
+    }
+
+    new ChatApp()
+  </script>
+</body>
+
+</html>
