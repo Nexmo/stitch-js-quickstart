@@ -16,7 +16,7 @@
       display: none
     }
 
-    #call-controls {
+    #call-incoming, #call-members {
       display: none
     }
   </style>
@@ -55,8 +55,13 @@
       <input type="text" name="username" value="">
       <input type="submit" value="Call" />
     </form>
-    <div id="call-controls">
-      <span id="call-members">You are in a call with </span><button id="hang-up">Hang Up</button>
+    <div>
+      <div id="call-incoming">
+        <p></p><button id="yes">Yes</button><button id="no">No</button>
+      </div>
+      <div id="call-members">
+        <p></p><button id="hang-up">Hang Up</button>
+      </div>
     </div>
     <h1>Conversations</h1>
   </section>
@@ -78,9 +83,11 @@
         this.enableButton = document.getElementById('enable')
         this.disableButton = document.getElementById('disable')
         this.callForm = document.getElementById('call-form')
-        this.callControls = document.getElementById('call-controls')
-        this.hangUpButton = document.getElementById('hang-up')
+        this.callIncoming = document.getElementById('call-incoming')
         this.callMembers = document.getElementById('call-members')
+        this.callYes = document.getElementById('yes')
+        this.callNo = document.getElementById('no')
+        this.hangUpButton = document.getElementById('hang-up')
         this.setupUserEvents()
       }
 
@@ -212,9 +219,28 @@
         }
       }
 
-      showCallControls(member) {
-        this.callControls.style.display = "block"
-        this.callMembers.textContent = this.callMembers.textContent + " " + member.invited_by || member.user.name
+      showCallIncoming(member) {
+        var memberName
+        if (member == "unknown") {
+          memberName = "a phone"
+        } else {
+          memberName = member.user.name
+        }
+        console.log("shit");
+        this.callIncoming.style.display = "block"
+        this.callIncoming.children[0].textContent = "Incoming call from " + memberName + ". Do you want to answer?"
+      }
+
+      showCallMembers(member) {
+        var memberName
+        if (member == "unknown") {
+          memberName = "a phone"
+        } else {
+          memberName = member.user.name
+        }
+        this.callMembers.style.display = "block"
+        this.callIncoming.style.display = "none"
+        this.callMembers.children[0].textContent = "You are in a call with " + memberName
       }
 
       listConversations(userToken) {
@@ -228,15 +254,17 @@
             this.app = app
 
             app.on("member:call", (member, call) => {
-              if (window.confirm(`Incoming call from ${member.user.name}. Do you want to answer?`)) {
-                this.call = call
-                call.answer().then((stream) => {
-                  this.setupAudioStream(stream)
-                  this.showCallControls(member)
-                })
+              this.call = call
+              console.log("member:call - ", call);
+              if ((this.call.from != "unknown") && (this.app.me.name != this.call.from.user.name)) {
+                this.showCallIncoming(call.from)
               } else {
-                call.hangUp()
+                this.showCallMembers("unknown")
               }
+            })
+
+            app.on("call:status:changed", (call) => {
+              console.log("call:status:changed - ", call.status)
             })
 
             app.on("member:invited", (member, event) => {
@@ -290,25 +318,23 @@
           event.preventDefault()
           var usernames = this.callForm.children.username.value.split(",").map(username => username.trim())
 
-          this.app.call(usernames).then(call => {
-            this.setupAudioStream(call.application.activeStream.stream)
-            this.call = call
-
-            call.on("call:member:state", (from, state, event) => {
-              if (state = "ANSWERED") {
-                this.showCallControls(from)
-              }
-              console.log("member: " + from.user.name + " has " + state);
-            });
-          });
-
+          this.app.call(usernames)
         })
 
         this.hangUpButton.addEventListener('click', () => {
           this.call.hangUp()
-          this.callControls.style.display = "none"
+          this.callMembers.style.display = "none"
         })
 
+        this.callYes.addEventListener('click', () => {
+          this.call.answer()
+          this.showCallMembers(this.call.from)
+        })
+
+        this.callNo.addEventListener('click', () => {
+          this.call.hangUp()
+          this.callIncoming.style.display = "none"
+        })
 
         this.messageTextarea.addEventListener('focus', () => {
           this.conversation.startTyping().then(this.eventLogger('text:typing:on')).catch(this.errorLogger)

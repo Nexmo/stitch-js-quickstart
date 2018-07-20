@@ -350,9 +350,6 @@
           this.callIncoming.style.display = "none"
         })
 
-
-
-
         this.messageTextarea.addEventListener('focus', () => {
           this.conversation.startTyping().then(this.eventLogger('text:typing:on')).catch(this.errorLogger)
         });
