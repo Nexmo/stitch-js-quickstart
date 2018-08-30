@@ -77,9 +77,6 @@
             }
 
             joinConversation(userToken) {
-                document.getElementById('messages').style.display = 'block'
-                this.loginForm.style.display = 'none'
-
                 new ConversationClient({
                         debug: false
                     })
@@ -105,6 +102,8 @@
                     event.preventDefault()
                     const userToken = this.authenticate()
                     if (userToken) {
+                        document.getElementById('messages').style.display = 'block'
+                        document.getElementById('login').style.display = 'none'
                         this.joinConversation(userToken)
                     }
                 })
