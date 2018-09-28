@@ -109,7 +109,7 @@
           var eventsHistory = ""
 
           events.forEach((value, key) => {
-            if (conversation.members[value.from]) {
+            if (conversation.members.get(value.from)) {
               const date = new Date(Date.parse(value.timestamp))
               switch (value.type) {
                 case 'text:seen':
@@ -117,28 +117,28 @@
                 case 'text:delivered':
                   break;
                 case 'text':
-                  eventsHistory = `${conversation.members[value.from].user.name} @ ${date}: <b>${value.body.text}</b><br>` + eventsHistory
+                  eventsHistory = `${conversation.members.get(value.from).user.name} @ ${date}: <b>${value.body.text}</b><br>` + eventsHistory
                   break;
 
                 case 'member:joined':
-                  eventsHistory = `${conversation.members[value.from].user.name} @ ${date}: <b>joined the conversation</b><br>` + eventsHistory
+                  eventsHistory = `${conversation.members.get(value.from).user.name} @ ${date}: <b>joined the conversation</b><br>` + eventsHistory
                   break;
                 case 'member:left':
-                  eventsHistory = `${conversation.members[value.from].user.name} @ ${date}: <b>left the conversation</b><br>` + eventsHistory
+                  eventsHistory = `${conversation.members.get(value.from).user.name} @ ${date}: <b>left the conversation</b><br>` + eventsHistory
                   break;
                 case 'member:invited':
-                  eventsHistory = `${conversation.members[value.from].user.name} @ ${date}: <b>invited to the conversation</b><br>` + eventsHistory
+                  eventsHistory = `${conversation.members.get(value.from).user.name} @ ${date}: <b>invited to the conversation</b><br>` + eventsHistory
                   break;
 
                 case 'member:media':
                   if (value.body.audio !== undefined) {
-                    eventsHistory = `${conversation.members[value.from].user.name} @ ${date}: <b>${value.body.audio ? "enabled" : "disabled"} audio</b><br>` + eventsHistory
+                    eventsHistory = `${conversation.members.get(value.from).user.name} @ ${date}: <b>${value.body.audio ? "enabled" : "disabled"} audio</b><br>` + eventsHistory
                   } else {
-                    eventsHistory = `${conversation.members[value.from].user.name} @ ${date}: <b>${value.body.video ? "enabled" : "disabled"} video</b><br>` + eventsHistory
+                    eventsHistory = `${conversation.members.get(value.from).user.name} @ ${date}: <b>${value.body.video ? "enabled" : "disabled"} video</b><br>` + eventsHistory
                   }
                   break;
                 default:
-                  eventsHistory = `${conversation.members[value.from].user.name} @ ${date}: <b>unknown event</b><br>` + eventsHistory
+                  eventsHistory = `${conversation.members.get(value.from).user.name} @ ${date}: <b>unknown event</b><br>` + eventsHistory
               }
             }
           })
@@ -194,16 +194,17 @@
           }
         })
 
-        for (var i = Object.keys(conversation.members).length; i > 0; i--) {
-          if (conversation.members[Object.keys(conversation.members)[i - 1]].user.name != conversation.me.user.name) {
-            conversation.members[Object.keys(conversation.members)[i - 1]].on("media:stream:on", (stream) => {
-              if ("srcObject" in this.conversationVideo) {
-                this.conversationVideo.srcObject = stream.stream;
-              } else {
-                // Avoid using this in new browsers, as it is going away.
-                this.conversationVideo.src = window.URL.createObjectURL(stream.stream);
+        for (let member of conversation.members.values()) {
+          if (member.user.name != conversation.me.user.name) {
+            member.on("media:stream:on", (stream) => {
+                if ("srcObject" in this.conversationVideo) {
+                  this.conversationVideo.srcObject = stream.stream;
+                } else {
+                  // Avoid using this in new browsers, as it is going away.
+                  this.conversationVideo.src = window.URL.createObjectURL(stream.stream);
+                }
               }
-            })
+            )
           }
         }
       }

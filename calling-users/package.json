@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "nexmo-stitch": "^2.0.0"
+    "nexmo-stitch": "^3.0.0-beta"
   }
 }
