@@ -126,7 +126,6 @@
       showConversationHistory(conversation) {
         conversation.getEvents().then((events) => {
 
-          console.log(events.values());
           var eventsHistory = ""
 
           events.forEach((value, key) => {
