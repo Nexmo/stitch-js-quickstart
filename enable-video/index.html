@@ -239,7 +239,7 @@
 
             app.on("member:invited", (member, event) => {
               //identify the sender and type of conversation.
-              if (event.body.cname.indexOf("CALL") != 0 && event.invited_by) {
+              if (event.body.cname.indexOf("CALL") != 0 && member.invited_by) {
                 console.log("*** Invitation received:", event);
 
                 //accept an invitation.
