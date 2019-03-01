@@ -17,7 +17,7 @@
       display: none
     }
   </style>
-  <script src="./node_modules/nexmo-stitch/dist/conversationClient.js"></script>
+  <script src="./node_modules/nexmo-client/dist/conversationClient.js"></script>
 </head>
 
 <body>
@@ -60,7 +60,6 @@
 
   <script>
     const USER_JWT = "YOUR USER JWT"
-    const YOUR_CONVERSATION_ID = 'YOUR CONVERSATION ID'
     const SECOND_USER_JWT = "SECOND USER JWT"
 
     class ChatApp {
@@ -147,6 +146,15 @@
         })
       }
 
+      setupVideoStream(video, stream) {
+        if ("srcObject" in video) {
+          video.srcObject = stream;
+        } else {
+          // Avoid using this in new browsers, as it is going away.
+          video.src = window.URL.createObjectURL(stream);
+        }
+      }
+
       setupConversationEvents(conversation) {
         this.conversation = conversation
         this.conversationList.style.display = 'none'
@@ -185,26 +193,11 @@
         conversation.on("text:typing:off", data => console.log(`${data.user.name} stopped typing...`))
         conversation.on("text:typing:on", data => console.log(`${data.user.name} started typing...`))
 
-        conversation.me.on("media:stream:on", (stream) => {
-          if ("srcObject" in this.selfVideo) {
-            this.selfVideo.srcObject = stream.localStream;
-          } else {
-            // Avoid using this in new browsers, as it is going away.
-            this.selfVideo.src = window.URL.createObjectURL(stream.localStream);
-          }
-        })
+        conversation.me.on("media:stream:on", (stream) => this.setupVideoStream(this.selfVideo, stream.stream))
 
         for (let member of conversation.members.values()) {
           if (member.user.name != conversation.me.user.name) {
-            member.on("media:stream:on", (stream) => {
-                if ("srcObject" in this.conversationVideo) {
-                  this.conversationVideo.srcObject = stream.stream;
-                } else {
-                  // Avoid using this in new browsers, as it is going away.
-                  this.conversationVideo.src = window.URL.createObjectURL(stream.stream);
-                }
-              }
-            )
+            member.on("media:stream:on", (stream) => this.setupVideoStream(this.conversationVideo, stream.stream))
           }
         }
       }
